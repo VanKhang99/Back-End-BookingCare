@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Examination Booking Confirmation</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Nunito", sans-serif;
+        color: #333333;
+        background-color: #ffffff;
+      }
+
+      .email {
+        padding: 10px;
+      }
+
+      .email__title {
+        font-size: 24px;
+      }
+
+      .email__dear {
+        margin: 2px;
+      }
+
+      ul {
+        margin-bottom: 4px;
+      }
+
+      ul li {
+        margin-left: 40px;
+      }
+
+      .email__link-confirm {
+        text-decoration: none;
+        color: #337ab7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email">
+      <h2 class="email__title">Medical Examination Booking Confirmation</h2>
+      <h4 class="email__dear">Dear <%=personNameBook %>,</h4>
+      <ul>
+        <li>
+          We are pleased to confirm your <%= remote ? `telemedicine schedule` : `medical examination` %>
+          booking for <strong><%= timeFrame %> - <%= dateBooked %></strong>, <%= doctorName ? `doctor` : '' %>
+          <strong><%= doctorName ? doctorName : packageName %> </strong> <%= remote ? '' : `at` %>
+          <strong><%= clinicName %></strong> <%= remote ? '' : `. Please arrive at least 15 minutes before
+          your appointment time to check in with our receptionist.` %>
+        </li>
+        <li>
+          To confirm your booking, please click the link:
+          <strong><a href="<%= URLConfirm %>" class="email__link-confirm">Confirm here</a></strong>
+        </li>
+      </ul>
+      <p>
+        If you need to reschedule or cancel your appointment, please contact us at 0868686868 at least 30
+        minutes in advance.
+      </p>
+      <p>We look forward to seeing you at your appointment.</p>
+      <p>Sincerely,</p>
+      <p>BookingCare</p>
+    </div>
+  </body>
+</html>

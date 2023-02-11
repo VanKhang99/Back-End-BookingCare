@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookingCare: Xác nhận kết quả và hóa đơn sau khi khám bệnh thành công</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap");
+      body {
+        font-family: "Nunito", sans-serif;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #5dade2;
+      }
+
+      p {
+        font-size: 16px;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        width: 80%;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Xác nhận kết quả và hóa đơn sau khi khám bệnh thành công</h1>
+      <p>Dear bạn <%=patientName %>,</p>
+      <p>
+        - Email này xác nhận rằng bạn đã đặt lịch khám bệnh với chúng tôi vào lúc <%=timeFrame %>,
+        <%=dateBooked %> và đã hoàn thành việc khám bệnh. Chúng tôi rất hân hạnh có cơ hội cung cấp cho bạn
+        những dịch vụ và trải nghiệm tốt nhất.
+      </p>
+      <p>
+        - Nếu bạn có bất kỳ câu hỏi hoặc thông tin nào thêm, vui lòng liên hệ với chúng tôi qua số 0868686868.
+      </p>
+      <p>
+        - Một lần nữa chúng tôi muốn gửi đến lời cảm ơn trân trọng nhất đến bạn vì đã tin tưởng sử dụng dịch
+        vị đặt lịch khám bệnh của chúng tôi.
+      </p>
+      <p>Trân trọng,</p>
+      <p>BookingCare</p>
+    </div>
+  </body>
+</html>

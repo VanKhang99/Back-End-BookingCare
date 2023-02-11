@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thư xác nhận đặt lịch khám bệnh</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Nunito", sans-serif;
+        color: #333333;
+        background-color: #ffffff;
+      }
+
+      .email {
+        padding: 10px;
+      }
+
+      .email__title {
+        font-size: 24px;
+      }
+
+      .email__dear {
+        margin: 2px;
+      }
+
+      ul {
+        margin-bottom: 4px;
+      }
+
+      ul li {
+        margin-left: 40px;
+      }
+
+      .email__link-confirm {
+        text-decoration: none;
+        color: #337ab7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email">
+      <h2 class="email__title">Xác nhận đặt lịch khám bệnh</h2>
+      <h4 class="email__dear">Dear bạn <%=personNameBook %>,</h4>
+      <ul>
+        <li>
+          Chúng tôi rất vui thông báo rằng lịch khám bệnh <%=remote ? `từ xa ` : '' %>của bạn đã được đặt
+          trong khung giờ <strong><%= timeFrame %> - <%= dateBooked %></strong>, <%= doctorName ? `bác sĩ` :
+          '' %> <strong><%= doctorName ? doctorName : packageName %> </strong> <%=remote ? '' : `tại`
+          %><strong> <%= clinicName %> </strong> <%=remote ? '' : `. Vui lòng đến trước ít nhất 15 phút trước
+          giờ hẹn để đăng ký với nhân viên lễ tân và hoàn tất các thủ tục hồ sơ cần thiết.` %>
+        </li>
+        <li>
+          Nếu các thông tin trên là chính xác, xin vui lòng nhấn vào link để xác nhận:
+          <strong><a href="<%= URLConfirm %>" class="email__link-confirm">Nhấn vào đây</a></strong>
+        </li>
+      </ul>
+      <p>
+        Trong trường hợp bạn cần hẹn lại vào một khung giờ khác hoặc huỷ lịch khám, vui lòng liên hệ với chúng
+        tôi tại 0868686868 ít nhất trước 30 phút.
+      </p>
+      <p>Chúng tôi mong được gặp bạn.</p>
+      <p>Trân trọng,</p>
+      <p>BookingCare</p>
+    </div>
+  </body>
+</html>

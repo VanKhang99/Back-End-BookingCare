@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-6">
+          <h3 class="col-12 my-3 text-primary fw-bold">CREATE NEW USER</h3>
+
+          <form action="/post-crud" method="POST" class="row g-3">
+            <!-- EMAIL -->
+            <div class="col-6">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+              />
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="col-6">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+              />
+            </div>
+
+            <!-- FIRST NAME -->
+            <div class="col-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                name="firstName"
+              />
+            </div>
+
+            <!--LAST NAME -->
+            <div class="col-6">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                name="lastName"
+              />
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="col-8">
+              <label for="address" class="form-label">Address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="address"
+                name="address"
+              />
+            </div>
+
+            <!-- PHONE -->
+            <div class="col-4">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="phone" name="phone" />
+            </div>
+
+            <!-- GENDER -->
+            <div class="col-md-4">
+              <label for="gender" class="form-label">Gender</label>
+              <select id="gender" class="form-select" name="gender">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+              </select>
+            </div>
+
+            <!-- ROLE -->
+            <div class="col-md-4">
+              <label for="roleId" class="form-label">Role</label>
+              <select id="roleId" class="form-select" name="roleId">
+                <option value="R1">Admin</option>
+                <option value="R2">Doctor</option>
+                <option value="R3">Patient</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label for="positionId" class="form-label">Position</label>
+              <select id="positionId" class="form-select" name="positionId">
+                <option value="P0">None</option>
+                <option value="P1">Master</option>
+                <option value="P2">Doctor</option>
+                <option value="P3">Associate Professor</option>
+                <option value="P4">Professor</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">Sign in</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

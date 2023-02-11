@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <title>Medical Examination Report and Invoice</title>
+    <style>
+      body {
+        font-family: "Nunito", sans-serif;
+        background-color: #f2f2f2;
+      }
+
+      header {
+        background-color: #337ab7;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #fff;
+        text-transform: uppercase;
+      }
+
+      section {
+        background-color: white;
+        box-shadow: 0 0 10px lightgray;
+        margin: 40px;
+        padding: 20px;
+      }
+
+      section h2 {
+        color: #337ab7;
+        margin: 0;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      td,
+      th {
+        border: 1px solid lightgray;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      td.label {
+        width: 35%;
+        font-weight: bold;
+      }
+
+      td.value {
+        width: 65%;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Medical Examination Report and Invoice</h1>
+    </header>
+    <main>
+      <section class="examination-report">
+        <h2>Examination Report</h2>
+        <table>
+          <tr>
+            <td class="label">Patient Name</td>
+            <td class="value"><%=patientName %></td>
+          </tr>
+          <tr>
+            <td class="label">Date of Examination</td>
+            <td class="value"><%=dateBooked %></td>
+          </tr>
+          <tr>
+            <td class="label">Doctor Name</td>
+            <td class="value"><%=doctorName %></td>
+          </tr>
+          <tr>
+            <td class="label">Examination Results</td>
+            <td class="value"><%=examinationResults %></td>
+          </tr>
+        </table>
+      </section>
+      <section class="invoice">
+        <h2>Invoice</h2>
+        <table>
+          <tr>
+            <td class="label">Invoice Number</td>
+            <td class="value"><%=invoiceNumber %></td>
+          </tr>
+          <tr>
+            <td class="label">Patient Name</td>
+            <td class="value"><%=patientName %></td>
+          </tr>
+          <tr>
+            <td class="label">Service used</td>
+            <td class="value"><%=serviceUsed %></td>
+          </tr>
+          <tr>
+            <td class="label">Total fee</td>
+            <td class="value"><%=totalFee %>VNĐ</td>
+          </tr>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

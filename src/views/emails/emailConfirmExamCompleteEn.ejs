@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookingCare: Confirm results and invoices after successful medical examination</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap");
+      body {
+        font-family: "Nunito", sans-serif;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #5dade2;
+      }
+
+      p {
+        font-size: 16px;
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        width: 80%;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Confirm results and invoices after successful medical examination</h1>
+      <p>Dear <%=patientName %>,</p>
+      <p>
+        - We wanted to take a moment to confirm that you have successfully scheduled a medical appointment
+        with us on <%=timeFrame %>, <%=dateBooked %>.
+      </p>
+      <p>
+        - We are looking forward to seeing you and providing the best care possible. If you have any questions
+        or concerns, please don't hesitate to reach out to us.
+      </p>
+      <p>
+        - Thank you for choosing us as your healthcare provider. We value your trust and are committed to
+        providing the best possible experience.
+      </p>
+      <p>Best regards,</p>
+      <p>BookingCare</p>
+    </div>
+  </body>
+</html>
