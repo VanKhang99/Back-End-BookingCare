@@ -25,7 +25,6 @@ exports.bulkCreateSchedule = async (req, res) => {
         },
         defaults: {
           ...schedule,
-          maxNumber: 3,
         },
         raw: true,
       });

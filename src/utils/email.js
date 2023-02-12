@@ -3,12 +3,32 @@ const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
 
+const convertHTMLtoPDF = async (html, pdf) => {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+    pdf = await page.pdf({
+      format: "A4",
+      displayHeaderFooter: false,
+      printBackground: true,
+      display: "full",
+    });
+    await browser.close();
+    return pdf;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const sendEmail = async (data, typeEmail = "createBooking") => {
   try {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
+      // host: process.env.EMAIL_HOST,
+      // port: process.env.EMAIL_PORT,
+      service: "gmail",
+      // secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
@@ -70,16 +90,7 @@ const sendEmail = async (data, typeEmail = "createBooking") => {
         dateBooked: data?.dateBooked,
       });
 
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.setContent(resultExaminationHTML);
-      pdf = await page.pdf({
-        format: "A4",
-        displayHeaderFooter: false,
-        printBackground: true,
-        display: "full",
-      });
-      await browser.close();
+      pdf = await convertHTMLtoPDF(resultExaminationHTML, pdf);
     }
 
     const mailOptions = {

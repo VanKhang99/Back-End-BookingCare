@@ -14,7 +14,7 @@ module.exports = {
       },
       maxNumber: {
         type: Sequelize.INTEGER,
-        defaultValue: 3,
+        defaultValue: 5,
       },
       date: {
         type: Sequelize.STRING,

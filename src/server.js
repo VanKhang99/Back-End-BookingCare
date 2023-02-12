@@ -12,9 +12,11 @@ const sequelize = new Sequelize("bookingcare", "root", "0934032904", {
 });
 
 const deleteOldSchedules = async () => {
-  const query = `DELETE FROM schedules WHERE DATE(createdAt) != CURRENT_DATE`;
+  const query = `DELETE FROM schedules WHERE DATE(createdAt) != CURDATE()`;
   await sequelize.query(query);
 };
+
+// deleteOldSchedules();
 
 setInterval(deleteOldSchedules, 86400000);
 

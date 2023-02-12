@@ -45,10 +45,7 @@ const statusExamPast = async (patientId) => {
     raw: true,
   });
 
-  console.log(examPast);
-
   const checkStatusId = examPast.every((exam) => exam.statusId === "S3");
-
   return checkStatusId;
 };
 
@@ -90,7 +87,7 @@ exports.handleCreateBooking = async (req, res) => {
 
     if (checkEmail.result) {
       const statusIdExamPast = await statusExamPast(+checkEmail.id);
-      console.log(statusIdExamPast);
+      // console.log(statusIdExamPast);
 
       if (statusIdExamPast) {
         if (!checkHourQuantityBooked.result) {
@@ -325,8 +322,7 @@ exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
     if (!patients.length) {
       return res.status(404).json({
         status: "error",
-        message:
-          "Currently, there are no patients scheduled for medical examination. Please choose another date!",
+        message: "Invalid data input. Please check again!",
       });
     }
 
@@ -421,87 +417,3 @@ exports.handleConfirmExamComplete = async (req, res) => {
     });
   }
 };
-
-// 1.Check schedule time frame is full or not
-
-// 2. If not full => create user
-// const [user, created] = await db.User.findOrCreate({
-//   where: { email },
-//   defaults: {
-//     email,
-//     roleId: "R7",
-//     firstName,
-//     lastName,
-//     gender,
-//     phoneNumber,
-//     address,
-//   },
-//   raw: true,
-// });
-
-// 3. User create success => create booking for that user
-// if (user) {
-//   let token = uuidv4();
-
-//   const scheduleBooked = await db.Schedule.findOne({
-//     where: { doctorId, timeType },
-//     attributes: ["currentNumber", "maxNumber", "timeType"],
-//     raw: true,
-//   });
-
-//   if (scheduleBooked.currentNumber < scheduleBooked.maxNumber) {
-//     await db.Schedule.update(
-//       {
-//         currentNumber: scheduleBooked.currentNumber + 1,
-//       },
-//       {
-//         where: { doctorId, timeType },
-//       }
-//     );
-//   } else {
-//     return res.status(400).json({
-//       status: "error",
-//       message: "The scheduled time frame is full. Please choose another time slot, thank you very much!",
-//     });
-//   }
-
-//   const booking = await db.Booking.findOrCreate({
-//     where: {
-//       patientId: user.id,
-//     },
-//     defaults: {
-//       [`${doctorId ? "doctorId" : "packageId"}`]: doctorId ? doctorId : packageId,
-//       statusId: "S1",
-//       patientId: user.id,
-//       birthday,
-//       timeType,
-//       dateBooked,
-//       reason,
-//       token,
-//       priceId,
-//     },
-//   });
-
-//   // booking new user, new email --> send email because prevent email spam to user
-// if (booking[1]) {
-//   const personNameBook = language === "vi" ? `${lastName} ${firstName}` : `${firstName} ${lastName}`;
-//   await sendEmail({
-//     email,
-//     language,
-//     [`${doctorName ? "doctorName" : "packageName"}`]: doctorName ? doctorName : packageName,
-//     clinicName,
-//     dateBooked,
-//     timeFrame,
-//     personNameBook,
-//     URLConfirm: buildURLConfirmBooking(doctorId, token, packageId),
-//     remote,
-//   });
-
-//   return res.status(200).json({
-//     status: "success",
-//     data: {
-//       booking,
-//     },
-//   });
-//   }
-// }
