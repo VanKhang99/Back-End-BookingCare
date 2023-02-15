@@ -5,7 +5,7 @@ const { checkInfo } = require("../utils/helpers");
 exports.handleGetAllSpecialtiesPopular = async (req, res) => {
   try {
     const specialties = await db.Specialty.findAll({
-      where: { popular: 1 },
+      where: { popular: true },
       attributes: {
         exclude: ["createdAt", "updatedAt", "id", "imageRemote"],
       },
@@ -42,7 +42,7 @@ exports.handleGetAllSpecialtiesPopular = async (req, res) => {
 exports.handleGetAllSpecialtiesRemote = async (req, res) => {
   try {
     const specialties = await db.Specialty.findAll({
-      where: { remote: 1 },
+      where: { remote: true },
       attributes: ["imageRemote", "specialtyId"],
       include: [
         {

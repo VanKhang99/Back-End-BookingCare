@@ -4,12 +4,30 @@ const app = require("./app");
 const { Sequelize } = require("sequelize");
 
 //CONNECT DB
-const sequelize = new Sequelize("bookingcare", "root", "0934032904", {
-  host: "localhost",
-  dialect: "mysql",
-  port: 3306,
-  logging: false,
-});
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: process.env.DB_DIALECT,
+    logging: false,
+    dialectOptions:
+      process.env.DB_SSL === "true"
+        ? {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          }
+        : {},
+    query: {
+      raw: true,
+    },
+    timezone: "+07:00",
+  }
+);
 
 const deleteOldSchedules = async () => {
   const query = `DELETE FROM schedules WHERE DATE(createdAt) != CURDATE()`;

@@ -11,7 +11,7 @@ exports.handleGetOutStandingDoctor = async (req, res) => {
     const doctors = await db.Doctor_Info.findAll({
       // limit: +limit,
       where: {
-        popular: 1,
+        popular: true,
       },
       // order: [["createdAt", "DESC"]],
       attributes: {

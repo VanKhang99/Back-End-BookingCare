@@ -17,11 +17,9 @@ module.exports = {
       },
       valueEn: {
         type: Sequelize.STRING,
-        unique: true,
       },
       valueVi: {
         type: Sequelize.STRING,
-        unique: true,
       },
       createdAt: {
         allowNull: false,

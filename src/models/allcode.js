@@ -84,6 +84,11 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       //Clinic - Specialty
+      Allcode.hasMany(models.Clinic_Specialty, {
+        foreignKey: "specialtyId",
+        as: "nameClinic",
+      });
+
       Allcode.hasOne(models.Clinic_Specialty, {
         foreignKey: "specialtyId",
         as: "nameSpecialty",

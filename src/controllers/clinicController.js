@@ -5,7 +5,7 @@ const { Buffer } = require("buffer");
 exports.handleGetAllClinicPopular = async (req, res) => {
   try {
     const clinics = await db.Clinic.findAll({
-      where: { popular: 1 },
+      where: { popular: true },
       attributes: ["clinicId", "image"],
       include: [
         {

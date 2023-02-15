@@ -8,12 +8,22 @@ exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
 
     const specialties = await db.Clinic_Specialty.findAll({
       where: { clinicId },
-      attributes: ["clinicId", "specialtyId", "address"],
+      attributes: ["clinicId", "specialtyId", "address", "image"],
       include: [
         {
           model: db.Allcode,
           as: "nameSpecialty",
           attributes: ["valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "nameClinic",
+          attributes: ["valueEn", "valueVi"],
+        },
+        {
+          model: db.Clinic,
+          as: "moreData",
+          attributes: ["logo"],
         },
       ],
       nest: true,
@@ -27,11 +37,15 @@ exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
       });
     }
 
-    // specialties.forEach((specialty) => {
-    //   if(specialty?.image) {
-    //     specialty.image = new Buffer(specialty.image, "base64").toString("binary");
-    //   }
-    // })
+    specialties.forEach((specialty) => {
+      if (specialty?.image) {
+        specialty.image = new Buffer(specialty.image, "base64").toString("binary");
+      }
+
+      if (specialty?.moreData?.logo) {
+        specialty.moreData.logo = new Buffer(specialty.moreData.logo, "base64").toString("binary");
+      }
+    });
 
     return res.status(200).json({
       status: "success",
@@ -51,6 +65,7 @@ exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
 exports.handleGetSpecialtyOfClinic = async (req, res) => {
   try {
     const { specialtyId, clinicId } = req.params;
+    console.log(specialtyId, clinicId);
 
     const specialty = await db.Clinic_Specialty.findOne({
       where: { specialtyId, clinicId },
@@ -67,6 +82,8 @@ exports.handleGetSpecialtyOfClinic = async (req, res) => {
       raw: true,
       nest: true,
     });
+
+    console.log(specialty);
 
     if (!specialty) {
       return res.status(404).json({

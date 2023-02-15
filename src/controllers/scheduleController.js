@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 exports.bulkCreateSchedule = async (req, res) => {
   try {
     const { dataSchedule, keyMap } = req.body;
+    console.log(dataSchedule, keyMap);
+
     if (!dataSchedule || !dataSchedule.length) {
       return res.status(400).json({
         status: "error",
@@ -15,13 +17,9 @@ exports.bulkCreateSchedule = async (req, res) => {
     for (const schedule of dataSchedule) {
       schedules = await db.Schedule.findOrCreate({
         where: {
-          [Op.and]: [
-            {
-              [`${keyMap}`]: keyMap.startsWith("doctor") ? schedule.doctorId : schedule.packageId,
-              date: schedule.date,
-              timeType: schedule.timeType,
-            },
-          ],
+          [`${keyMap}`]: keyMap.startsWith("doctor") ? +schedule.doctorId : +schedule.packageId,
+          date: `${schedule.date}`,
+          timeType: `${schedule.timeType}`,
         },
         defaults: {
           ...schedule,

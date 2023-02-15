@@ -16,6 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         as: "nameSpecialty",
       });
 
+      Clinic_Specialty.belongsTo(models.Allcode, {
+        foreignKey: "clinicId",
+        targetKey: "keyMap",
+        as: "nameClinic",
+      });
+
       //Clinic
       Clinic_Specialty.belongsTo(models.Clinic, {
         foreignKey: "clinicId",
