@@ -17,6 +17,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      keyWord: {
+        type: Sequelize.STRING(100),
+        allowNull: true,
+      },
       image: {
         type: Sequelize.BLOB("long"),
         allowNull: false,

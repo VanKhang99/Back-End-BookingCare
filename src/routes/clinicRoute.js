@@ -3,8 +3,9 @@ const clinicController = require("../controllers/clinicController.js");
 
 const router = express.Router();
 
-router.get("/popular", clinicController.handleGetAllClinicPopular);
+router.get("/all/:type", clinicController.handleGetAllClinic);
 router.post("/", clinicController.handleSaveInfoClinic);
 router.get("/:clinicId", clinicController.handleGetInfoClinic);
+router.delete("/:clinicId", clinicController.handleDeleteClinic);
 
 module.exports = router;

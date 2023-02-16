@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       clinicId: DataTypes.STRING,
       address: DataTypes.STRING,
+      keyWord: DataTypes.STRING(100),
       image: DataTypes.BLOB("long"),
       logo: DataTypes.BLOB("long"),
       haveSpecialtyPage: DataTypes.BOOLEAN,

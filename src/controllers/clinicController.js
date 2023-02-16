@@ -2,11 +2,15 @@ const db = require("../models/index");
 const { Buffer } = require("buffer");
 // const { checkInfo } = require("../utils/helpers");
 
-exports.handleGetAllClinicPopular = async (req, res) => {
+exports.handleGetAllClinic = async (req, res) => {
   try {
+    const { type } = req.params;
+
     const clinics = await db.Clinic.findAll({
-      where: { popular: true },
-      attributes: ["clinicId", "image"],
+      where: {
+        ...(type === "popular" && { popular: true }),
+      },
+      attributes: ["clinicId", "image", "logo", "address", "keyWord"],
       include: [
         {
           model: db.Allcode,
@@ -142,6 +146,37 @@ exports.handleSaveInfoClinic = async (req, res) => {
     });
   } catch (error) {
     console.log("Save info clinic error", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error from the server.",
+    });
+  }
+};
+
+exports.handleDeleteClinic = async (req, res) => {
+  try {
+    const { clinicId } = req.params;
+    if (!clinicId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid clinicId",
+      });
+    }
+
+    await db.Clinic.destroy({
+      where: { clinicId },
+    });
+
+    // await db.Allcode.destroy({
+    //   where: { keyMap: clinicId },
+    // });
+
+    return res.status(204).json({
+      status: "success",
+      message: "Clinic deleted successfully",
+    });
+  } catch (error) {
+    console.log("Delete clinic error", error);
     return res.status(500).json({
       status: "error",
       message: "Error from the server.",
