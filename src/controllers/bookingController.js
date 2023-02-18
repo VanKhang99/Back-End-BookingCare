@@ -86,7 +86,7 @@ exports.handleCreateBooking = async (req, res) => {
 
     const token = uuidv4();
     const checkEmail = await userIsExisted(email);
-    const checkHourQuantityBooked = await quantityBooked(doctorId, timeType);
+    const checkHourQuantityBooked = await quantityBooked(doctorId || packageId, timeType);
     let booking;
 
     if (checkEmail.result) {

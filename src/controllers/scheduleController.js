@@ -63,14 +63,16 @@ const handleScheduleFuture = (schedulesArr) => {
 
 exports.handleGetSchedules = async (req, res) => {
   try {
-    const { id, timeStamp, keyMap } = req.params;
+    const { id, timeStamp, keyMap, timesFetch } = req.params;
 
-    if (!id || !timeStamp || !keyMap) {
+    if (!id || !timeStamp || !keyMap || !timesFetch) {
       return res.status(400).json({
         status: "error",
         message: "Missing parameter to execute request!",
       });
     }
+
+    console.log(timesFetch);
 
     const schedules = await db.Schedule.findAll({
       where: {
@@ -93,13 +95,13 @@ exports.handleGetSchedules = async (req, res) => {
       nest: true,
     });
 
-    // const schedulesFuture = handleScheduleFuture(schedules);
+    const schedulesFuture = handleScheduleFuture(schedules);
 
     if (schedules && schedules.length > 0) {
       return res.status(200).json({
         status: "success",
         data: {
-          schedules,
+          schedules: timesFetch === "initial-fetch" ? schedulesFuture : schedules,
         },
       });
     }
