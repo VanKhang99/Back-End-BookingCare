@@ -7,4 +7,6 @@ router.route("/").post(scheduleController.bulkCreateSchedule);
 
 router.route("/:keyMap=:id&:timeStamp&:timesFetch").get(scheduleController.handleGetSchedules);
 
+// route.get("/:doctorId/:date", scheduleController.handleGetScheduleByDoctorId);
+
 module.exports = router;

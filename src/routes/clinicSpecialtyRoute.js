@@ -7,4 +7,6 @@ router.get("/:clinicId", clinicSpecialtyController.handleGetAllSpecialtiesByClin
 router.get("/:specialtyId/:clinicId", clinicSpecialtyController.handleGetSpecialtyOfClinic);
 router.post("/add-specialty", clinicSpecialtyController.handleAddSpecialtyClinic);
 
+router.delete("/:specialtyId/:clinicId", clinicSpecialtyController.handleDeleteSpecialtyClinic);
+
 module.exports = router;

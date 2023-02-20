@@ -6,6 +6,8 @@ const router = express.Router();
 router.get("/all-doctors", doctorController.handelGetAllDoctors);
 router.post("/save-info-doctors", doctorController.handleSaveInfoDoctor);
 
+router.delete("/:doctorId", doctorController.handleDeleteDoctor);
+
 router.get("/outstanding-doctor", doctorController.handleGetOutStandingDoctor);
 router.get("/detail/:doctorId", doctorController.handleGetDetailDoctor);
 router.get("/address-price-assurance/:doctorId", doctorController.handleGetInfoAddressPriceAssurance);

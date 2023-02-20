@@ -11,6 +11,9 @@ router
   .post(specialtyController.handleSaveInfoSpecialty);
 // router.route("/save-info-specialty").post(specialtyController.handleSaveInfoSpecialty);
 
-router.route("/:specialtyId").get(specialtyController.handleGetInfoSpecialty);
+router
+  .route("/:specialtyId")
+  .get(specialtyController.handleGetInfoSpecialty)
+  .delete(specialtyController.handleDeleteInfoSpecialty);
 
 module.exports = router;

@@ -167,9 +167,9 @@ exports.handleDeleteClinic = async (req, res) => {
       where: { clinicId },
     });
 
-    // await db.Allcode.destroy({
-    //   where: { keyMap: clinicId },
-    // });
+    await db.Allcode.destroy({
+      where: { keyMap: clinicId },
+    });
 
     return res.status(204).json({
       status: "success",

@@ -163,3 +163,34 @@ exports.handleAddSpecialtyClinic = async (req, res) => {
     });
   }
 };
+
+exports.handleDeleteSpecialtyClinic = async (req, res) => {
+  try {
+    const { specialtyId, clinicId } = req.params;
+
+    if (!specialtyId || !clinicId) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid specialtyId or clinicId",
+      });
+    }
+
+    await db.Clinic_Specialty.destroy({
+      where: {
+        clinicId,
+        specialtyId,
+      },
+    });
+
+    return res.status(204).json({
+      status: "success",
+      message: "Specialty of clinic is deleted successfully!",
+    });
+  } catch (error) {
+    console.log("Delete specialty for clinic error", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error from the server.",
+    });
+  }
+};

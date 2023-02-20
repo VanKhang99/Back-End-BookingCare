@@ -186,3 +186,34 @@ exports.handleSaveInfoSpecialty = async (req, res) => {
     });
   }
 };
+
+exports.handleDeleteInfoSpecialty = async (req, res) => {
+  try {
+    const { specialtyId } = req.params;
+    if (!specialtyId) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid specialtyId",
+      });
+    }
+
+    await db.Specialty.destroy({
+      where: { specialtyId },
+    });
+
+    await db.Allcode.destroy({
+      where: { keyMap: specialtyId },
+    });
+
+    return res.status(204).json({
+      status: "success",
+      message: "Specialty is deleted successfully!",
+    });
+  } catch (error) {
+    console.log("Delete info specialty error!", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error from the server.",
+    });
+  }
+};

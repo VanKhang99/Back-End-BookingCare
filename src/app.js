@@ -14,8 +14,9 @@ const scheduleRouter = require("./routes/scheduleRoute");
 const bookingRouter = require("./routes/bookingRoute");
 const specialtyRouter = require("./routes/specialtyRoute");
 const clinicRouter = require("./routes/clinicRoute");
+const packageTypeRouter = require("./routes/packageTypeRoute");
 const packageRouter = require("./routes/packageRoute");
-const clinicSpecialtyRouter = require("./routes/clinic_specialtyRoute");
+const clinicSpecialtyRouter = require("./routes/clinicSpecialtyRoute");
 
 // CONFIG APP
 const app = express();
@@ -54,5 +55,6 @@ app.use("/api/specialties", specialtyRouter);
 app.use("/api/clinics", clinicRouter);
 app.use("/api/clinics-specialties", clinicSpecialtyRouter);
 app.use("/api/packages", packageRouter);
+app.use("/api/packages-type", packageTypeRouter);
 
 module.exports = app;

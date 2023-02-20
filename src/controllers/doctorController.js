@@ -422,3 +422,30 @@ exports.handleGetDoctorsBaseKeyMap = async (req, res) => {
     });
   }
 };
+
+exports.handleDeleteDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    if (!doctorId) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid doctorId",
+      });
+    }
+
+    await db.Doctor_Info.destroy({
+      where: { doctorId },
+    });
+
+    return res.status(204).json({
+      status: "success",
+      message: "Doctor deleted successfully",
+    });
+  } catch (error) {
+    console.log("Delete doctor error!", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error from the server.",
+    });
+  }
+};
