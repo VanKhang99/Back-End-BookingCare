@@ -217,10 +217,10 @@ exports.handleCreateBooking = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Create booking error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Create booking error from the server.",
     });
   }
 };
@@ -262,10 +262,10 @@ exports.handleVerifyBooking = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Verify booking error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Verify booking error from the server.",
     });
   }
 };
@@ -338,10 +338,10 @@ exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all patients booking for a certain doctor error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all patients booking for a certain doctor error from the server.",
     });
   }
 };
@@ -414,10 +414,10 @@ exports.handleConfirmExamComplete = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Confirm examination complete error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Confirm examination complete error from the server.",
     });
   }
 };

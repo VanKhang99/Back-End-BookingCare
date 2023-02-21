@@ -64,10 +64,10 @@ exports.handleGetOutStandingDoctor = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get outstanding doctor error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get outstanding doctor error from the server.",
     });
   }
 };
@@ -99,10 +99,10 @@ exports.handelGetAllDoctors = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all doctors error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all doctors error from the server.",
     });
   }
 };
@@ -182,10 +182,10 @@ exports.handleSaveInfoDoctor = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Post info doctor error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Post info doctor error from the server.",
     });
   }
 };
@@ -269,10 +269,10 @@ exports.handleGetDetailDoctor = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get detail doctor error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get detail doctor error from the server.",
     });
   }
 };
@@ -331,10 +331,10 @@ exports.handleGetInfoAddressPriceAssurance = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get info address price assurance error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get info address price assurance error from the server.",
     });
   }
 };
@@ -415,10 +415,10 @@ exports.handleGetDoctorsBaseKeyMap = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all doctor belong to a specialty error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all doctor belong to a specialty error from the server.",
     });
   }
 };
@@ -442,10 +442,10 @@ exports.handleDeleteDoctor = async (req, res) => {
       message: "Doctor deleted successfully",
     });
   } catch (error) {
-    console.log("Delete doctor error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete doctor error from the server.",
     });
   }
 };

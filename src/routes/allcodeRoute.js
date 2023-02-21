@@ -3,7 +3,8 @@ const allCodeController = require("../controllers/allCodeController");
 
 const router = express.Router();
 
-router.post("/", allCodeController.handleCreateNewData);
-router.get("/:type", allCodeController.handleGetAllCode);
+router.post("/", allCodeController.createNewData);
+router.get("/:type", allCodeController.getAllCodes);
+router.get("/get-one/:keyMap", allCodeController.getOneAllCode);
 
 module.exports = router;

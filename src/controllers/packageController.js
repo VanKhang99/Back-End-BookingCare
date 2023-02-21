@@ -12,10 +12,10 @@ exports.handleGetAllPackages = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all packages error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all packages error from the server.",
     });
   }
 };
@@ -77,10 +77,10 @@ exports.handleGetAllPackagesByClinicId = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all packages error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all packages by clinicId error from the server.",
     });
   }
 };
@@ -140,10 +140,10 @@ exports.handleGetAllPackagesByIds = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all packages by ids error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all packages by ids error from the server.",
     });
   }
 };
@@ -196,10 +196,10 @@ exports.handleGetPackage = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get package error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get package error from the server.",
     });
   }
 };
@@ -252,10 +252,10 @@ exports.handleCreatePackage = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Create package error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Create package error from the server.",
     });
   }
 };
@@ -280,10 +280,10 @@ exports.handleDeletePackage = async (req, res) => {
       message: "Package deleted successfully",
     });
   } catch (error) {
-    console.log("Delete package error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete package error from the server.",
     });
   }
 };

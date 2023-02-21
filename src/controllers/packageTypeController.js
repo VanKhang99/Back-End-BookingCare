@@ -18,10 +18,10 @@ exports.getAllPackagesType = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all packages type error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all packages type error from the server.",
     });
   }
 };
@@ -56,10 +56,10 @@ exports.getPackageType = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get package error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get package error from the server.",
     });
   }
 };
@@ -112,10 +112,10 @@ exports.createPackageType = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Create package type error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Create package-type error from the server.",
     });
   }
 };
@@ -141,10 +141,10 @@ exports.deletePackageType = async (req, res) => {
       message: "Package type deleted successfully",
     });
   } catch (error) {
-    console.log("Delete package type error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete package-type error from the server.",
     });
   }
 };

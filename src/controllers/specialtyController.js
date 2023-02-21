@@ -31,10 +31,10 @@ exports.handleGetAllSpecialtiesPopular = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all info specialty error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all info specialty error from the server.",
     });
   }
 };
@@ -67,10 +67,10 @@ exports.handleGetAllSpecialtiesRemote = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all specialties remote error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all specialties remote error from the server.",
     });
   }
 };
@@ -108,10 +108,10 @@ exports.handleGetInfoSpecialty = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get info specialty error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get info specialty error from the server.",
     });
   }
 };
@@ -179,10 +179,10 @@ exports.handleSaveInfoSpecialty = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Save info specialty error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Save info specialty error from the server.",
     });
   }
 };
@@ -210,10 +210,10 @@ exports.handleDeleteInfoSpecialty = async (req, res) => {
       message: "Specialty is deleted successfully!",
     });
   } catch (error) {
-    console.log("Delete info specialty error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete info specialty error from the server.",
     });
   }
 };

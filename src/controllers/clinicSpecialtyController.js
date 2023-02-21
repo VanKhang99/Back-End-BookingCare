@@ -54,10 +54,10 @@ exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all specialties by clinicId error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all specialties by clinicId error from the server.",
     });
   }
 };
@@ -103,10 +103,10 @@ exports.handleGetSpecialtyOfClinic = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get specialty of clinic error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get specialty of clinic error from the server.",
     });
   }
 };
@@ -156,10 +156,10 @@ exports.handleAddSpecialtyClinic = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Add specialty for clinic error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Add specialty for clinic error from the server.",
     });
   }
 };
@@ -187,10 +187,10 @@ exports.handleDeleteSpecialtyClinic = async (req, res) => {
       message: "Specialty of clinic is deleted successfully!",
     });
   } catch (error) {
-    console.log("Delete specialty for clinic error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete specialty for clinic error from the server.",
     });
   }
 };

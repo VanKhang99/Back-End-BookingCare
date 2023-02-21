@@ -1,6 +1,26 @@
 const db = require("../models/index");
 const { Op } = require("sequelize");
 
+const handleScheduleFuture = (schedulesArr) => {
+  const curDate = new Date();
+  curDate.setMinutes(curDate.getMinutes() + 30);
+
+  const newSchedules = schedulesArr
+    .filter((schedule) => {
+      const hour = schedule.timeTypeData.valueVi.split(" - ")[0];
+
+      const dateConvertToCompare = new Date();
+      dateConvertToCompare.setHours(hour.split(":")[0]);
+      dateConvertToCompare.setMinutes(hour.split(":")[1]);
+      dateConvertToCompare.setSeconds(0);
+
+      return dateConvertToCompare > curDate;
+    })
+    .sort((a, b) => +a.frameTimestamp - b.frameTimestamp);
+
+  return [...newSchedules];
+};
+
 exports.bulkCreateSchedule = async (req, res) => {
   try {
     const { dataSchedule, keyMap } = req.body;
@@ -33,32 +53,12 @@ exports.bulkCreateSchedule = async (req, res) => {
       message: "Schedules have been created in the database!",
     });
   } catch (error) {
-    console.log("Bulk create schedule error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Bulk create schedules error from the server.",
     });
   }
-};
-
-const handleScheduleFuture = (schedulesArr) => {
-  const curDate = new Date();
-  curDate.setMinutes(curDate.getMinutes() + 30);
-
-  const newSchedules = schedulesArr
-    .filter((schedule) => {
-      const hour = schedule.timeTypeData.valueVi.split(" - ")[0];
-
-      const dateConvertToCompare = new Date();
-      dateConvertToCompare.setHours(hour.split(":")[0]);
-      dateConvertToCompare.setMinutes(hour.split(":")[1]);
-      dateConvertToCompare.setSeconds(0);
-
-      return dateConvertToCompare > curDate;
-    })
-    .sort((a, b) => +a.frameTimestamp - b.frameTimestamp);
-
-  return [...newSchedules];
 };
 
 exports.handleGetSchedules = async (req, res) => {
@@ -113,10 +113,48 @@ exports.handleGetSchedules = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get schedules error!", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get schedules error from the server.",
+    });
+  }
+};
+
+exports.handleDeleteSchedules = async (req, res) => {
+  try {
+    const { typeId, id, date } = req.params;
+    const schedules = req.body;
+
+    if (!typeId || !id || !date) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid keyMap or id",
+      });
+    }
+
+    console.log(typeId, id);
+    console.log(schedules);
+
+    for (const schedule of schedules) {
+      await db.Schedule.destroy({
+        where: {
+          [`${typeId}`]: id,
+          timeType: `${schedule.keyMap}`,
+          date,
+        },
+      });
+    }
+
+    return res.status(204).json({
+      status: "success",
+      message: "Schedules are deleted successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Delete schedules error from the server.",
     });
   }
 };

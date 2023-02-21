@@ -1,7 +1,7 @@
 const db = require("../models/index");
 const { Op } = require("sequelize");
 
-exports.handleGetAllCode = async (req, res) => {
+exports.getAllCodes = async (req, res) => {
   try {
     const { type } = req.params;
 
@@ -13,7 +13,9 @@ exports.handleGetAllCode = async (req, res) => {
     }
 
     const dataResponse = await db.Allcode.findAll({
-      where: { type },
+      where: {
+        ...(type !== "all" && { type }),
+      },
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
@@ -35,15 +37,49 @@ exports.handleGetAllCode = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get all code error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all code error from the server.",
     });
   }
 };
 
-exports.handleCreateNewData = async (req, res) => {
+exports.getOneAllCode = async (req, res) => {
+  try {
+    const { keyMap } = req.params;
+
+    const data = await db.Allcode.findOne({
+      where: { keyMap },
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      raw: true,
+    });
+
+    if (!data) {
+      return res.status(404).json({
+        status: "error",
+        message: "No data found with that keyMap. Please check your ID and try again!",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Get one row allCode error from the server.",
+    });
+  }
+};
+
+exports.createNewData = async (req, res) => {
   try {
     const { valueEn, valueVi } = req.body;
     const checkValue = await db.Allcode.findOne({
@@ -74,10 +110,10 @@ exports.handleCreateNewData = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Create data all-code error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Create data all-code error from the server.",
     });
   }
 };

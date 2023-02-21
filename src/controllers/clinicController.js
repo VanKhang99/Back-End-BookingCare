@@ -42,10 +42,10 @@ exports.handleGetAllClinic = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Gte all clinic popular last week error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get all clinic popular last week error from the server.",
     });
   }
 };
@@ -92,10 +92,10 @@ exports.handleGetInfoClinic = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Get info clinic error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Get info clinic error from the server.",
     });
   }
 };
@@ -145,10 +145,10 @@ exports.handleSaveInfoClinic = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Save info clinic error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Save info clinic error from the server.",
     });
   }
 };
@@ -176,10 +176,10 @@ exports.handleDeleteClinic = async (req, res) => {
       message: "Clinic deleted successfully",
     });
   } catch (error) {
-    console.log("Delete clinic error", error);
+    console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Error from the server.",
+      message: "Delete clinic error from the server.",
     });
   }
 };
