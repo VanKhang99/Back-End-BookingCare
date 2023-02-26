@@ -9,18 +9,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Specialty.belongsTo(models.Allcode, {
-        foreignKey: "specialtyId",
-        targetKey: "keyMap",
-        as: "nameData",
-      });
     }
   }
   Specialty.init(
     {
-      specialtyId: DataTypes.STRING,
-      image: DataTypes.BLOB("long"),
-      imageRemote: DataTypes.BLOB("long"),
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      nameVi: DataTypes.STRING,
+      nameEn: DataTypes.STRING,
+      image: DataTypes.STRING,
+      imageRemote: DataTypes.STRING,
       popular: DataTypes.BOOLEAN,
       remote: DataTypes.BOOLEAN,
       descriptionHTML: DataTypes.TEXT,

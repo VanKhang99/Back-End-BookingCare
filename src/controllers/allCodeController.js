@@ -79,34 +79,62 @@ exports.getOneAllCode = async (req, res) => {
   }
 };
 
-exports.createNewData = async (req, res) => {
+exports.createAllCode = async (req, res) => {
   try {
-    const { valueEn, valueVi } = req.body;
-    const checkValue = await db.Allcode.findOne({
+    const data = { ...req.body };
+    const { keyMap } = req.body;
+
+    const isExisted = await db.Allcode.findOne({
       where: {
-        [Op.and]: [{ valueEn }, { valueVi }],
+        keyMap,
       },
       raw: true,
     });
 
-    if (checkValue) {
-      return res.status(400).json({
-        status: "error",
-        message: "This all-code data is created in the DB. Please try another data!",
+    if (data.action === "create") {
+      if (isExisted) {
+        return res.status(400).json({
+          status: "error",
+          message: "This all-code data(keyMap) is created in the DB. Please try another!",
+        });
+      }
+
+      const infoCreated = await db.Allcode.create(
+        {
+          ...data,
+        },
+        { raw: true }
+      );
+
+      return res.status(201).json({
+        status: "success",
+        data: {
+          info: infoCreated ? infoCreated : {},
+        },
       });
     }
 
-    const newAllCode = await db.Allcode.create(
+    const infoUpdated = await db.Allcode.update(
       {
-        ...req.body,
+        ...data,
+        updatedAt: new Date(),
       },
-      { raw: true }
+      {
+        where: { keyMap },
+      }
     );
+
+    if (!infoUpdated[0]) {
+      return res.status(404).json({
+        status: "error",
+        message: "No record found with that keyMap!",
+      });
+    }
 
     return res.status(200).json({
       status: "success",
       data: {
-        allcode: newAllCode,
+        info: infoUpdated,
       },
     });
   } catch (error) {
@@ -114,6 +142,34 @@ exports.createNewData = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Create data all-code error from the server.",
+    });
+  }
+};
+
+exports.deleteAllCode = async (req, res) => {
+  try {
+    const { keyMap } = req.params;
+
+    const allCodeDeleted = await db.Allcode.destroy({
+      where: { keyMap },
+    });
+
+    if (!allCodeDeleted) {
+      return res.status(404).json({
+        status: "error",
+        message: "No allCode found with that keyMap. Please check and try again!",
+      });
+    }
+
+    return res.status(204).json({
+      status: "success",
+      message: "AllCode is deleted successfully!",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Delete all-code error from the server.",
     });
   }
 };

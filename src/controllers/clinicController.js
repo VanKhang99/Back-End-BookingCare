@@ -1,38 +1,18 @@
 const db = require("../models/index");
 const { Buffer } = require("buffer");
-// const { checkInfo } = require("../utils/helpers");
+const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
 
-exports.handleGetAllClinic = async (req, res) => {
+exports.getAllClinic = async (req, res) => {
   try {
     const { type } = req.params;
 
-    const clinics = await db.Clinic.findAll({
-      where: {
-        ...(type === "popular" && { popular: true }),
-      },
-      attributes: ["clinicId", "image", "logo", "address", "keyWord"],
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameClinicData",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
+    let clinics = await getManyImageFromS3("Clinic");
+
+    if (type === "popular") {
+      clinics = clinics.filter((clinic) => clinic.popular);
+    }
 
     if (clinics?.length > 0) {
-      clinics.forEach((clinic) => {
-        if (clinic?.image) {
-          clinic.image = new Buffer(clinic.image, "base64").toString("binary");
-        }
-
-        if (clinic.logo) {
-          clinic.logo = new Buffer(clinic.logo, "base64").toString("binary");
-        }
-      });
-
       return res.status(200).json({
         status: "success",
         results: clinics.length,
@@ -50,45 +30,22 @@ exports.handleGetAllClinic = async (req, res) => {
   }
 };
 
-exports.handleGetInfoClinic = async (req, res) => {
+exports.getClinic = async (req, res) => {
   try {
-    const { clinicId } = req.params;
+    const clinicId = +req.params.clinicId;
+    const dataClinic = await getOneImageFromS3("Clinic", +clinicId);
 
-    if (!clinicId) {
-      return res.status(400).json({
+    if (!dataClinic) {
+      return res.status(404).json({
         status: "error",
-        message: "Invalid clinicId",
+        message: "No data found with that ID. Please check your ID and try again!",
       });
-    }
-
-    const clinic = await db.Clinic.findOne({
-      where: { clinicId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "id"],
-      },
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameClinicData",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
-
-    if (clinic?.image) {
-      clinic.image = new Buffer(clinic.image, "base64").toString("binary");
-    }
-
-    if (clinic?.logo) {
-      clinic.logo = new Buffer(clinic.logo, "base64").toString("binary");
     }
 
     return res.status(200).json({
       status: "success",
       data: {
-        data: clinic ? clinic : {},
+        data: dataClinic,
       },
     });
   } catch (error) {
@@ -100,10 +57,10 @@ exports.handleGetInfoClinic = async (req, res) => {
   }
 };
 
-exports.handleSaveInfoClinic = async (req, res) => {
+exports.createUpdateClinic = async (req, res) => {
   try {
     const { data } = req.body;
-    const { clinicId, action } = data;
+    const { id, action } = data;
 
     if (action === "create") {
       const infoCreated = await db.Clinic.create(
@@ -127,7 +84,7 @@ exports.handleSaveInfoClinic = async (req, res) => {
         updatedAt: new Date(),
       },
       {
-        where: { clinicId },
+        where: { id: +id },
       }
     );
 
@@ -153,27 +110,25 @@ exports.handleSaveInfoClinic = async (req, res) => {
   }
 };
 
-exports.handleDeleteClinic = async (req, res) => {
+exports.deleteClinic = async (req, res) => {
   try {
-    const { clinicId } = req.params;
-    if (!clinicId) {
+    const clinicId = +req.params.clinicId;
+
+    if (!clinicId)
       return res.status(400).json({
         status: "error",
         message: "Invalid clinicId",
       });
-    }
 
     await db.Clinic.destroy({
-      where: { clinicId },
-    });
-
-    await db.Allcode.destroy({
-      where: { keyMap: clinicId },
+      where: {
+        id: clinicId,
+      },
     });
 
     return res.status(204).json({
       status: "success",
-      message: "Clinic deleted successfully",
+      message: "Hospital (Clinic) is deleted successfully",
     });
   } catch (error) {
     console.log(error);
@@ -183,37 +138,3 @@ exports.handleDeleteClinic = async (req, res) => {
     });
   }
 };
-
-// {
-//   model: db.Doctor_Info,
-//   as: "doctors",
-//   attributes: {
-//     exclude: ["addressClinic", "createdAt", "updatedAt", "id", "popular"],
-//   },
-//   include: [
-//     {
-//       model: db.User,
-//       as: "anotherInfo",
-//     },
-//     {
-//       model: db.Allcode,
-//       as: "paymentData",
-//       attributes: ["valueEn", "valueVi"],
-//     },
-//     {
-//       model: db.Allcode,
-//       as: "priceData",
-//       attributes: ["valueEn", "valueVi"],
-//     },
-//     {
-//       model: db.Allcode,
-//       as: "provinceData",
-//       attributes: ["valueEn", "valueVi"],
-//     },
-//     {
-//       model: db.Allcode,
-//       as: "specialtyData",
-//       attributes: ["valueEn", "valueVi"],
-//     },
-//   ],
-// },

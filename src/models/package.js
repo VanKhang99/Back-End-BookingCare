@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Package.belongsTo(models.Clinic, {
         foreignKey: "clinicId",
-        targetKey: "clinicId",
+        targetKey: "id",
         as: "clinicData",
       });
     }

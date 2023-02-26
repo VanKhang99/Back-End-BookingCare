@@ -1,35 +1,30 @@
 const db = require("../models/index");
 const { Buffer } = require("buffer");
 const { checkInfo } = require("../utils/helpers");
+const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
 
-exports.handleGetAllSpecialtiesPopular = async (req, res) => {
+exports.getAllSpecialties = async (req, res) => {
   try {
-    const specialties = await db.Specialty.findAll({
-      where: { popular: true },
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "id", "imageRemote"],
-      },
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameData",
-          attributes: ["valueEn", "valueVi"],
+    const { type } = req.params;
+    let specialties = await getManyImageFromS3("Specialty");
+
+    if (type === "popular") {
+      specialties = specialties.filter((specialty) => specialty.popular);
+    }
+
+    if (type === "remote") {
+      specialties = specialties.filter((specialty) => specialty.remote);
+    }
+
+    if (specialties?.length > 0) {
+      return res.status(200).json({
+        status: "success",
+        results: specialties.length,
+        data: {
+          specialties,
         },
-      ],
-      raw: true,
-      nest: true,
-    });
-
-    specialties.forEach((specialty) => {
-      specialty.image = new Buffer(specialty.image, "base64").toString("binary");
-    });
-
-    return res.status(200).json({
-      status: "success",
-      data: {
-        specialties,
-      },
-    });
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -39,72 +34,95 @@ exports.handleGetAllSpecialtiesPopular = async (req, res) => {
   }
 };
 
-exports.handleGetAllSpecialtiesRemote = async (req, res) => {
+// exports.getAllSpecialtiesPopular = async (req, res) => {
+//   try {
+//     const specialties = await db.Specialty.findAll({
+//       where: { popular: true },
+//       attributes: {
+//         exclude: ["createdAt", "updatedAt", "id", "imageRemote"],
+//       },
+//       include: [
+//         {
+//           model: db.Allcode,
+//           as: "nameData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//       ],
+//       raw: true,
+//       nest: true,
+//     });
+
+//     specialties.forEach((specialty) => {
+//       specialty.image = new Buffer(specialty.image, "base64").toString("binary");
+//     });
+
+//     return res.status(200).json({
+//       status: "success",
+//       data: {
+//         specialties,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       status: "error",
+//       message: "Get all info specialty error from the server.",
+//     });
+//   }
+// };
+
+// exports.getAllSpecialtiesRemote = async (req, res) => {
+//   try {
+//     const specialties = await db.Specialty.findAll({
+//       where: { remote: true },
+//       attributes: ["imageRemote", "specialtyId"],
+//       include: [
+//         {
+//           model: db.Allcode,
+//           as: "nameData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//       ],
+//       raw: true,
+//       nest: true,
+//     });
+
+//     specialties.forEach((specialty) => {
+//       specialty.imageRemote = new Buffer(specialty.imageRemote, "base64").toString("binary");
+//     });
+
+//     return res.status(200).json({
+//       status: "success",
+//       result: specialties.length,
+//       data: {
+//         specialties,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       status: "error",
+//       message: "Get all specialties remote error from the server.",
+//     });
+//   }
+// };
+
+exports.getSpecialty = async (req, res) => {
   try {
-    const specialties = await db.Specialty.findAll({
-      where: { remote: true },
-      attributes: ["imageRemote", "specialtyId"],
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameData",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
+    const specialtyId = +req.params.specialtyId;
 
-    specialties.forEach((specialty) => {
-      specialty.imageRemote = new Buffer(specialty.imageRemote, "base64").toString("binary");
-    });
+    const dataSpecialty = await getOneImageFromS3("Specialty", specialtyId);
 
-    return res.status(200).json({
-      status: "success",
-      result: specialties.length,
-      data: {
-        specialties,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: "Get all specialties remote error from the server.",
-    });
-  }
-};
-
-exports.handleGetInfoSpecialty = async (req, res) => {
-  try {
-    const { specialtyId } = req.params;
-
-    if (!specialtyId)
-      return res.status(400).json({
+    if (!dataSpecialty)
+      return res.status(404).json({
         status: "error",
-        message: "Invalid specialtyId",
+        message: "No data found with that ID. Please check your ID and try again!",
       });
 
-    const specialty = await db.Specialty.findOne({
-      where: { specialtyId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      raw: true,
-    });
-
-    if (specialty?.image) {
-      specialty.image = new Buffer(specialty.image, "base64").toString("binary");
-    }
-
-    if (specialty?.imageRemote) {
-      specialty.imageRemote = new Buffer(specialty.imageRemote, "base64").toString("binary");
-    }
-
     return res.status(200).json({
       status: "success",
       data: {
-        specialty: specialty ? specialty : {},
+        data: dataSpecialty,
       },
     });
   } catch (error) {
@@ -116,33 +134,15 @@ exports.handleGetInfoSpecialty = async (req, res) => {
   }
 };
 
-exports.handleSaveInfoSpecialty = async (req, res) => {
+exports.createUpdateSpecialty = async (req, res) => {
   try {
-    const {
-      specialtyId,
-      image,
-      imageRemote,
-      descriptionHTML,
-      descriptionMarkdown,
-      descriptionRemoteHTML,
-      descriptionRemoteMarkdown,
-      popular,
-      remote,
-      action,
-    } = req.body;
+    const data = req.body;
+    const { id, action } = data;
 
     if (action === "create") {
       const infoCreated = await db.Specialty.create(
         {
-          specialtyId,
-          image,
-          imageRemote,
-          descriptionHTML,
-          descriptionMarkdown,
-          descriptionRemoteHTML,
-          descriptionRemoteMarkdown,
-          popular,
-          remote,
+          ...data,
         },
         { raw: true }
       );
@@ -161,14 +161,14 @@ exports.handleSaveInfoSpecialty = async (req, res) => {
         updatedAt: new Date(),
       },
       {
-        where: { specialtyId },
+        where: { id: +id },
       }
     );
 
     if (!infoUpdated[0]) {
       return res.status(404).json({
         status: "error",
-        message: "No record found with that ID or update data is empty!",
+        message: "No record found with that ID or data is not enough!",
       });
     }
 
@@ -187,27 +187,25 @@ exports.handleSaveInfoSpecialty = async (req, res) => {
   }
 };
 
-exports.handleDeleteInfoSpecialty = async (req, res) => {
+exports.deleteSpecialty = async (req, res) => {
   try {
-    const { specialtyId } = req.params;
-    if (!specialtyId) {
+    const specialtyId = +req.params.specialtyId;
+
+    if (!specialtyId)
       return res.status(404).json({
         status: "error",
         message: "Invalid specialtyId",
       });
-    }
 
     await db.Specialty.destroy({
-      where: { specialtyId },
-    });
-
-    await db.Allcode.destroy({
-      where: { keyMap: specialtyId },
+      where: {
+        id: specialtyId,
+      },
     });
 
     return res.status(204).json({
       status: "success",
-      message: "Specialty is deleted successfully!",
+      message: "specialty is deleted successfully",
     });
   } catch (error) {
     console.log(error);

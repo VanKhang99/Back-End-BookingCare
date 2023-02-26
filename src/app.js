@@ -17,6 +17,7 @@ const clinicRouter = require("./routes/clinicRoute");
 const packageTypeRouter = require("./routes/packageTypeRoute");
 const packageRouter = require("./routes/packageRoute");
 const clinicSpecialtyRouter = require("./routes/clinicSpecialtyRoute");
+const awsS3router = require("./routes/awsS3route");
 
 // CONFIG APP
 const app = express();
@@ -56,5 +57,6 @@ app.use("/api/clinics", clinicRouter);
 app.use("/api/clinics-specialties", clinicSpecialtyRouter);
 app.use("/api/packages", packageRouter);
 app.use("/api/packages-type", packageTypeRouter);
+app.use("/api/awsS3", awsS3router);
 
 module.exports = app;

@@ -9,15 +9,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      specialtyId: {
+      nameVi: {
         type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      nameEn: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
       },
       image: {
-        type: Sequelize.BLOB("long"),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       imageRemote: {
-        type: Sequelize.BLOB("long"),
+        type: Sequelize.STRING,
         allowNull: true,
       },
       popular: {

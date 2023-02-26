@@ -1,22 +1,20 @@
 const db = require("../models/index");
 const { Buffer } = require("buffer");
 
+const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
+
 exports.getAllPackagesType = async (req, res) => {
   try {
-    const packagesType = await db.Package_Type.findAll();
-
-    if (packagesType.length > 0) {
-      packagesType.forEach((packageType) => {
-        packageType.image = new Buffer(packageType.image, "base64").toString("binary");
-      });
-    }
+    const dataPackagesType = await getManyImageFromS3("Package_Type");
 
     return res.status(200).json({
       status: "success",
       data: {
-        packages: packagesType ? packagesType : [],
+        packages: dataPackagesType.length ? dataPackagesType : [],
       },
     });
+
+    console.log(dataPackagesType);
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -29,30 +27,19 @@ exports.getAllPackagesType = async (req, res) => {
 exports.getPackageType = async (req, res) => {
   try {
     const { packageTypeId } = req.params;
+    const dataPackagesType = await getOneImageFromS3("Package_Type", +packageTypeId);
 
-    const data = await db.Package_Type.findOne({
-      where: { id: +packageTypeId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      raw: true,
-    });
-
-    if (!data) {
+    if (!dataPackagesType) {
       return res.status(404).json({
         status: "error",
         message: "No data found with that ID. Please check your ID and try again!",
       });
     }
 
-    if (data.image) {
-      data.image = new Buffer(data.image, "base64").toString("binary");
-    }
-
     return res.status(200).json({
       status: "success",
       data: {
-        data,
+        data: dataPackagesType,
       },
     });
   } catch (error) {
@@ -64,7 +51,7 @@ exports.getPackageType = async (req, res) => {
   }
 };
 
-exports.createPackageType = async (req, res) => {
+exports.createUpdatePackageType = async (req, res) => {
   try {
     const data = { ...req.body };
 
@@ -75,10 +62,6 @@ exports.createPackageType = async (req, res) => {
         },
         { raw: true }
       );
-
-      if (infoCreated.image) {
-        infoCreated.image = new Buffer(infoCreated.image, "base64").toString("binary");
-      }
 
       return res.status(201).json({
         status: "success",
@@ -148,3 +131,7 @@ exports.deletePackageType = async (req, res) => {
     });
   }
 };
+
+//   if (infoCreated.image) {
+//     infoCreated.image = new Buffer(infoCreated.image, "base64").toString("binary");
+//   }

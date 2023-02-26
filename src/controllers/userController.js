@@ -2,6 +2,7 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const { Buffer } = require("buffer");
+const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
 const roleToFilter = (roleString) => {
   let roleIdToMap;
@@ -20,7 +21,7 @@ const roleToFilter = (roleString) => {
   return (roleIdToMap = "R7");
 };
 
-exports.handleGetAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res) => {
   try {
     //pagination
     const page = +req.query.page;
@@ -72,20 +73,15 @@ exports.handleGetAllUsers = async (req, res) => {
   }
 };
 
-exports.handleGetUser = async (req, res) => {
+exports.getUser = async (req, res) => {
   try {
-    const id = +req.params.id;
-    const user = await db.User.findOne({
-      attributes: {
-        exclude: ["password", "image"],
-      },
-      where: { id },
-    });
+    const userId = +req.params.id;
+    const user = await getOneImageFromS3("User", userId);
 
     if (!user) {
       return res.status(404).json({
         status: "error",
-        message: "No user found with that ID",
+        message: "No user found with that id",
         data: {},
       });
     }
@@ -93,15 +89,19 @@ exports.handleGetUser = async (req, res) => {
     return res.status(200).json({
       status: "success",
       data: {
-        user,
+        data: user,
       },
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Get user error from the server.",
+    });
   }
 };
 
-exports.handleCreateUser = async (req, res) => {
+exports.createUser = async (req, res) => {
   try {
     const checkEmail = await userService.checkEmailExisted(req.body.email);
 
@@ -132,46 +132,34 @@ exports.handleCreateUser = async (req, res) => {
   }
 };
 
-exports.handleUpdateUser = async (req, res) => {
+exports.updateUser = async (req, res) => {
   try {
     const id = +req.params.id;
+    console.log(req.body);
+    // const result = await db.User.update(
+    //   { ...req.body },
+    //   {
+    //     where: { id },
+    //   }
+    // );
 
-    const dataUpdated = {
-      email: req.body.email,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      address: req.body.address,
-      phoneNumber: req.body.phoneNumber,
-      image: req.body.image ? req.body.image : "",
-      gender: req.body.gender,
-      roleId: req.body.roleId,
-      positionId: req.body.positionId,
-    };
+    // if (!result[0]) {
+    //   return res.status(404).json({
+    //     status: "error",
+    //     message: "No record found with that ID or update data is empty!",
+    //   });
+    // }
 
-    const result = await db.User.update(
-      { ...dataUpdated },
-      {
-        where: { id },
-      }
-    );
-
-    if (!result[0]) {
-      return res.status(404).json({
-        status: "error",
-        message: "No record found with that ID or update data is empty!",
-      });
-    }
-
-    return res.status(200).json({
-      status: "success",
-      message: "Update successful!",
-    });
+    // return res.status(200).json({
+    //   status: "success",
+    //   message: "Update successful!",
+    // });
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.handleDeleteUser = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   try {
     const id = +req.params.id;
 

@@ -25,26 +25,26 @@ module.exports = (sequelize, DataTypes) => {
       //Clinic
       Clinic_Specialty.belongsTo(models.Clinic, {
         foreignKey: "clinicId",
-        targetKey: "clinicId",
+        targetKey: "id",
         as: "moreData",
       });
     }
   }
   Clinic_Specialty.init(
     {
-      clinicId: DataTypes.STRING,
-      specialtyId: DataTypes.STRING,
+      clinicId: DataTypes.INTEGER,
+      specialtyId: DataTypes.INTEGER,
       address: DataTypes.STRING,
-      image: DataTypes.BLOB("long"),
+      image: DataTypes.STRING,
 
-      bookingHTML: DataTypes.TEXT("long"),
-      bookingMarkdown: DataTypes.TEXT("long"),
-      introductionHTML: DataTypes.TEXT("long"),
-      introductionMarkdown: DataTypes.TEXT("long"),
-      examAndTreatmentHTML: DataTypes.TEXT("long"),
-      examAndTreatmentMarkdown: DataTypes.TEXT("long"),
-      strengthsHTML: DataTypes.TEXT("long"),
-      strengthsMarkdown: DataTypes.TEXT("long"),
+      bookingHTML: DataTypes.TEXT,
+      bookingMarkdown: DataTypes.TEXT,
+      introductionHTML: DataTypes.TEXT,
+      introductionMarkdown: DataTypes.TEXT,
+      examAndTreatmentHTML: DataTypes.TEXT,
+      examAndTreatmentMarkdown: DataTypes.TEXT,
+      strengthsHTML: DataTypes.TEXT,
+      strengthsMarkdown: DataTypes.TEXT,
     },
     {
       sequelize,

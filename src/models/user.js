@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
       address: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
       gender: DataTypes.STRING,
-      image: DataTypes.BLOB("long"),
+      image: DataTypes.STRING,
       roleId: DataTypes.STRING,
       positionId: DataTypes.STRING,
     },

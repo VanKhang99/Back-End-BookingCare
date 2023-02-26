@@ -7,13 +7,13 @@ const router = express.Router();
 router.post("/login", authController.login);
 router.get("/logout", authController.logout);
 
-router.route("/").get(userController.handleGetAllUsers).post(userController.handleCreateUser);
+router.route("/").get(userController.getAllUsers).post(userController.createUser);
 
 router
   .route("/:id")
-  .get(userController.handleGetUser)
-  .patch(userController.handleUpdateUser)
-  .delete(userController.handleDeleteUser);
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 // router.get("/filter/:role", userController.handleGetAllUsersByRole);
 

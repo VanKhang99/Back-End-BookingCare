@@ -9,63 +9,66 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Clinic.belongsTo(models.Allcode, {
-        foreignKey: "clinicId",
-        targetKey: "keyMap",
-        as: "nameClinicData",
-      });
-
+      // Clinic.belongsTo(models.Allcode, {
+      //   foreignKey: "clinicId",
+      //   targetKey: "keyMap",
+      //   as: "nameClinicData",
+      // });
       // Clinic.belongsTo(models.Doctor_Info, {
       //   foreignKey: "clinicId",
       //   targetKey: "clinicId",
       //   as: "doctors",
       // });
-
       Clinic.hasMany(models.Doctor_Info, {
         foreignKey: "clinicId",
-        targetKey: "clinicId",
+        targetKey: "id",
         as: "doctors",
       });
-
       Clinic.hasMany(models.Package, {
         foreignKey: "clinicId",
-        targetKey: "clinicId",
+        targetKey: "id",
         as: "clinicData",
       });
-
       Clinic.hasMany(models.Clinic_Specialty, {
         foreignKey: "clinicId",
-        targetKey: "clinicId",
+        targetKey: "id",
         as: "moreData",
       });
     }
   }
   Clinic.init(
     {
-      clinicId: DataTypes.STRING,
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      nameVi: DataTypes.STRING,
+      nameEn: DataTypes.STRING,
       address: DataTypes.STRING,
       keyWord: DataTypes.STRING(100),
-      image: DataTypes.BLOB("long"),
-      logo: DataTypes.BLOB("long"),
       haveSpecialtyPage: DataTypes.BOOLEAN,
       popular: DataTypes.BOOLEAN,
-      noteHTML: DataTypes.TEXT("long"),
-      noteMarkdown: DataTypes.TEXT("long"),
+      image: DataTypes.STRING,
+      logo: DataTypes.STRING,
 
-      bookingHTML: DataTypes.TEXT("long"),
-      bookingMarkdown: DataTypes.TEXT("long"),
-      introductionHTML: DataTypes.TEXT("long"),
-      introductionMarkdown: DataTypes.TEXT("long"),
-      strengthsHTML: DataTypes.TEXT("long"),
-      strengthsMarkdown: DataTypes.TEXT("long"),
-      equipmentHTML: DataTypes.TEXT("long"),
-      equipmentMarkdown: DataTypes.TEXT("long"),
-      locationHTML: DataTypes.TEXT("long"),
-      locationMarkdown: DataTypes.TEXT("long"),
-      processHTML: DataTypes.TEXT("long"),
-      processMarkdown: DataTypes.TEXT("long"),
-      priceHTML: DataTypes.TEXT("long"),
-      priceMarkdown: DataTypes.TEXT("long"),
+      noteHTML: DataTypes.TEXT,
+      noteMarkdown: DataTypes.TEXT,
+      bookingHTML: DataTypes.TEXT,
+      bookingMarkdown: DataTypes.TEXT,
+      introductionHTML: DataTypes.TEXT,
+      introductionMarkdown: DataTypes.TEXT,
+      strengthsHTML: DataTypes.TEXT,
+      strengthsMarkdown: DataTypes.TEXT,
+      equipmentHTML: DataTypes.TEXT,
+      equipmentMarkdown: DataTypes.TEXT,
+      locationHTML: DataTypes.TEXT,
+      locationMarkdown: DataTypes.TEXT,
+      processHTML: DataTypes.TEXT,
+      processMarkdown: DataTypes.TEXT,
+      priceHTML: DataTypes.TEXT,
+      priceMarkdown: DataTypes.TEXT,
     },
     {
       sequelize,

@@ -9,24 +9,30 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      clinicId: {
+      nameVi: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
+      },
+      nameEn: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        unique: true,
       },
       address: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       keyWord: {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
       image: {
-        type: Sequelize.BLOB("long"),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       logo: {
-        type: Sequelize.BLOB("long"),
+        type: Sequelize.STRING,
         allowNull: false,
       },
       haveSpecialtyPage: {
@@ -38,67 +44,67 @@ module.exports = {
         allowNull: false,
       },
       noteHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       noteMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       bookingHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       bookingMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       introductionHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       introductionMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       strengthsHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       strengthsMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       equipmentHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       equipmentMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       locationHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       locationMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       processHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       processMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       priceHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       priceMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
 

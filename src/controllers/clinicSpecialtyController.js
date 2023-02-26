@@ -1,8 +1,8 @@
 const db = require("../models/index");
 const { Buffer } = require("buffer");
-const { checkInfo } = require("../utils/helpers");
+const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
-exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
+exports.getAllSpecialtiesByClinicId = async (req, res) => {
   try {
     const { clinicId } = req.params;
 
@@ -62,44 +62,23 @@ exports.handleGetAllSpecialtiesByClinicId = async (req, res) => {
   }
 };
 
-exports.handleGetSpecialtyOfClinic = async (req, res) => {
+exports.getSpecialtyOfClinic = async (req, res) => {
   try {
     const { specialtyId, clinicId } = req.params;
-    console.log(specialtyId, clinicId);
 
-    const specialty = await db.Clinic_Specialty.findOne({
-      where: { specialtyId, clinicId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameSpecialty",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
+    const specialtyClinicData = await getOneImageFromS3("Clinic_Specialty", clinicId, specialtyId);
 
-    console.log(specialty);
-
-    if (!specialty) {
+    if (!specialtyClinicData) {
       return res.status(404).json({
         status: "error",
-        message: "Invalid specialtyId or clinicId",
+        message: "No data found with that IDs. Please check your IDs and try again!",
       });
-    }
-
-    if (specialty?.image) {
-      specialty.image = new Buffer(specialty.image, "base64").toString("binary");
     }
 
     return res.status(200).json({
       status: "success",
       data: {
-        data: specialty ? specialty : {},
+        data: specialtyClinicData,
       },
     });
   } catch (error) {
@@ -111,7 +90,7 @@ exports.handleGetSpecialtyOfClinic = async (req, res) => {
   }
 };
 
-exports.handleAddSpecialtyClinic = async (req, res) => {
+exports.addUpdateSpecialtyClinic = async (req, res) => {
   try {
     const { data } = req.body;
     const { clinicId, specialtyId, action } = data;
@@ -127,7 +106,7 @@ exports.handleAddSpecialtyClinic = async (req, res) => {
       return res.status(201).json({
         status: "success",
         data: {
-          info: infoCreated ? infoCreated : {},
+          info: infoCreated,
         },
       });
     }
@@ -164,7 +143,7 @@ exports.handleAddSpecialtyClinic = async (req, res) => {
   }
 };
 
-exports.handleDeleteSpecialtyClinic = async (req, res) => {
+exports.deleteSpecialtyClinic = async (req, res) => {
   try {
     const { specialtyId, clinicId } = req.params;
 
