@@ -46,12 +46,6 @@ exports.getAllUsers = async (req, res) => {
     });
 
     if (users.length > 0) {
-      users.forEach((user) => {
-        if (user.roleId !== "R7") {
-          user.image = new Buffer.from(user.image, "base64").toString("binary");
-        }
-      });
-
       return res.status(200).json({
         status: "success",
         data: {
@@ -77,12 +71,12 @@ exports.getUser = async (req, res) => {
   try {
     const userId = +req.params.id;
     const user = await getOneImageFromS3("User", userId);
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({
         status: "error",
-        message: "No user found with that id",
-        data: {},
+        message: "No data found with that IDs. Please check your IDs and try again!",
       });
     }
 
@@ -135,25 +129,26 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const id = +req.params.id;
-    console.log(req.body);
-    // const result = await db.User.update(
-    //   { ...req.body },
-    //   {
-    //     where: { id },
-    //   }
-    // );
+    const dataCopy = { ...req.body };
+    delete dataCopy["password"];
+    const result = await db.User.update(
+      { ...dataCopy },
+      {
+        where: { id },
+      }
+    );
 
-    // if (!result[0]) {
-    //   return res.status(404).json({
-    //     status: "error",
-    //     message: "No record found with that ID or update data is empty!",
-    //   });
-    // }
+    if (!result[0]) {
+      return res.status(404).json({
+        status: "error",
+        message: "No record found with that ID or update data is empty!",
+      });
+    }
 
-    // return res.status(200).json({
-    //   status: "success",
-    //   message: "Update successful!",
-    // });
+    return res.status(200).json({
+      status: "success",
+      message: "Update successful!",
+    });
   } catch (error) {
     console.log(error);
   }
