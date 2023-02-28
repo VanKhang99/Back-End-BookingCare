@@ -3,14 +3,12 @@ const doctorController = require("../controllers/doctorController");
 
 const router = express.Router();
 
-router.get("/all-doctors", doctorController.handelGetAllDoctors);
-router.post("/save-info-doctors", doctorController.handleSaveInfoDoctor);
+router.get("/:type", doctorController.getAllDoctors);
+router.post("/", doctorController.saveInfoDoctor);
+router.delete("/:doctorId", doctorController.deleteDoctor);
+router.get("/detail/:doctorId", doctorController.getDetailDoctor);
+router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);
 
-router.delete("/:doctorId", doctorController.handleDeleteDoctor);
-
-router.get("/outstanding-doctor", doctorController.handleGetOutStandingDoctor);
-router.get("/detail/:doctorId", doctorController.handleGetDetailDoctor);
-router.get("/address-price-assurance/:doctorId", doctorController.handleGetInfoAddressPriceAssurance);
-router.get("/:keyMapId&:remote", doctorController.handleGetDoctorsBaseKeyMap);
+// router.get("/address-price-assurance/:doctorId", doctorController.getInfoAddressPriceAssurance);
 
 module.exports = router;

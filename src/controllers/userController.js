@@ -2,7 +2,7 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const { Buffer } = require("buffer");
-const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
+const { getImagesFromS3ForUsers, getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
 const roleToFilter = (roleString) => {
   let roleIdToMap;
@@ -36,6 +36,7 @@ exports.getAllUsers = async (req, res) => {
       attributes: ["roleId"],
     });
 
+    // const users = await getImagesFromS3ForUsers(roleIdToMap, limit, offset);
     const users = await db.User.findAll({
       where: { ...(roleIdToMap !== "ALL" && { roleId: roleIdToMap }) },
       attributes: {
@@ -71,7 +72,6 @@ exports.getUser = async (req, res) => {
   try {
     const userId = +req.params.id;
     const user = await getOneImageFromS3("User", userId);
-    console.log(user);
 
     if (!user) {
       return res.status(404).json({

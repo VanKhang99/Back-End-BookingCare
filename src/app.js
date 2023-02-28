@@ -47,7 +47,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use("/", homeRouter);
 app.use("/api/allcodes", allcodeRouter);
 app.use("/api/users", userRouter);
-app.use("/api/doctor", doctorRouter);
+app.use("/api/doctors", doctorRouter);
 app.use("/api/schedules", scheduleRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/specialties", specialtyRouter);

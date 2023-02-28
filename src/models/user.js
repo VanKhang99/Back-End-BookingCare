@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       //Doctor_Info
       User.hasOne(models.Doctor_Info, {
         foreignKey: "doctorId",
-        as: "anotherInfo",
+        as: "moreData",
       });
 
       //Booking

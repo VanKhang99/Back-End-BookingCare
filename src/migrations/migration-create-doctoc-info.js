@@ -26,16 +26,16 @@ module.exports = {
         allowNull: false,
       },
       specialtyId: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       clinicId: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       addressClinic: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       popular: {
         type: Sequelize.BOOLEAN,
@@ -68,10 +68,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
       },
     });
   },

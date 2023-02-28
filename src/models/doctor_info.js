@@ -27,29 +27,25 @@ module.exports = (sequelize, DataTypes) => {
         as: "paymentData",
       });
 
-      Doctor_Info.belongsTo(models.Allcode, {
-        foreignKey: "specialtyId",
-        targetKey: "keyMap",
-        as: "specialtyData",
-      });
-
-      Doctor_Info.belongsTo(models.Allcode, {
-        foreignKey: "clinicId",
-        targetKey: "keyMap",
-        as: "clinicData",
-      });
-
       //USER
       Doctor_Info.belongsTo(models.User, {
         foreignKey: "doctorId",
         targetKey: "id",
-        as: "anotherInfo",
+        as: "moreData",
       });
 
       //CLINIC
       Doctor_Info.belongsTo(models.Clinic, {
         foreignKey: "clinicId",
-        as: "doctors",
+        targetKey: "id",
+        as: "clinic",
+      });
+
+      //SPECIALTY
+      Doctor_Info.belongsTo(models.Specialty, {
+        foreignKey: "specialtyId",
+        targetKey: "id",
+        as: "specialtyData",
       });
 
       //BOOKING
@@ -65,8 +61,8 @@ module.exports = (sequelize, DataTypes) => {
       priceId: DataTypes.STRING,
       provinceId: DataTypes.STRING,
       paymentId: DataTypes.STRING,
-      specialtyId: DataTypes.STRING,
-      clinicId: DataTypes.STRING,
+      specialtyId: DataTypes.INTEGER,
+      clinicId: DataTypes.INTEGER,
 
       addressClinic: DataTypes.STRING,
       popular: DataTypes.BOOLEAN,

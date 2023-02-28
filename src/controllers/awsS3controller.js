@@ -18,10 +18,71 @@ const s3 = new S3Client({
 
 exports.upLoadPhoto = upload.single("uploaded_file");
 
-exports.getManyImageFromS3 = async (nameDB) => {
-  try {
-    const data = await db[nameDB].findAll();
+// exports.getImagesFromS3ForUsers = async(roleIdToMap, limit, offset) => {
+//   try {
+//     const data = await db.User.findAll({
+//       where: { ...(roleIdToMap !== "ALL" && { roleId: roleIdToMap }) },
+//       attributes: {
+//         exclude: ["password"],
+//       },
+//       ...(offset >= 0 && { offset }),
+//       ...(limit > 0 && { limit }),
+//     });
 
+//     const getObjectParams = {
+//       Bucket: process.env.AWS_S3_BUCKET_NAME,
+//     };
+
+//     for (const item of data) {
+//       if (item.image) {
+//         getObjectParams.Key = item.image;
+//         const imageCommand = new GetObjectCommand(getObjectParams);
+//         item.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
+//       }
+//     }
+
+//     return data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+exports.getManyImageFromS3 = async (nameDB, type = null) => {
+  try {
+    let data;
+    if (nameDB === "Doctor_Info") {
+      data = await db[nameDB].findAll({
+        attributes: ["doctorId", "popular"],
+        include: [
+          {
+            model: db.User,
+            as: "moreData",
+            attributes: ["id", "firstName", "lastName", "image", "roleId", "positionId"],
+            include: [
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["keyMap", "valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["keyMap", "valueEn", "valueVi"],
+              },
+            ],
+          },
+          {
+            model: db.Specialty,
+            as: "specialtyData",
+            attributes: ["id", "nameEn", "nameVi"],
+          },
+        ],
+        nest: true,
+        raw: true,
+      });
+    } else {
+      data = await db[nameDB].findAll();
+    }
     // console.log(data);
 
     const getObjectParams = {
@@ -33,6 +94,12 @@ exports.getManyImageFromS3 = async (nameDB) => {
         getObjectParams.Key = item.image;
         const imageCommand = new GetObjectCommand(getObjectParams);
         item.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
+      }
+
+      if (nameDB === "Doctor_Info") {
+        getObjectParams.Key = item.moreData.image;
+        const imageCommand = new GetObjectCommand(getObjectParams);
+        item.moreData.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
       }
 
       if (nameDB === "Clinic" && item.logo) {
@@ -64,6 +131,72 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
           clinicId: +id,
           specialtyId: +id2,
         },
+      });
+    } else if (nameDB === "User") {
+      data = await db.User.findOne({
+        where: { id },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "password"],
+        },
+        include: [
+          {
+            model: db.Allcode,
+            as: "positionData",
+            attributes: ["keyMap", "valueEn", "valueVi"],
+          },
+          {
+            model: db.Allcode,
+            as: "roleData",
+            attributes: ["keyMap", "valueEn", "valueVi"],
+          },
+          {
+            model: db.Doctor_Info,
+            as: "moreData",
+            attributes: {
+              exclude: [
+                "doctorId",
+                "id",
+                "nameClinic",
+                "provinceId",
+                "paymentId",
+                "priceId",
+                "clinicId",
+                "specialtyId",
+                "createdAt",
+                "updatedAt",
+              ],
+            },
+            include: [
+              {
+                model: db.Clinic,
+                as: "clinic",
+                attributes: ["id", "nameEn", "nameVi", "address"],
+              },
+              {
+                model: db.Specialty,
+                as: "specialtyData",
+                attributes: ["id", "nameEn", "nameVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "provinceData",
+                attributes: ["keyMap", "valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "paymentData",
+                attributes: ["keyMap", "valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "priceData",
+                attributes: ["keyMap", "valueEn", "valueVi"],
+              },
+            ],
+          },
+        ],
+        nest: true,
+        raw: true,
       });
     } else {
       data = await db[nameDB].findOne({
