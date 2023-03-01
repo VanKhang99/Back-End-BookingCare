@@ -66,7 +66,7 @@ exports.createUpdatePackageType = async (req, res) => {
       return res.status(201).json({
         status: "success",
         data: {
-          info: infoCreated ? infoCreated : {},
+          info: infoCreated,
         },
       });
     }

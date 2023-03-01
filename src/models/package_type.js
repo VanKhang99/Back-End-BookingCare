@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Package_Type.init(
     {
-      typeVi: DataTypes.STRING,
-      typeEn: DataTypes.STRING,
+      nameVi: DataTypes.STRING,
+      nameEn: DataTypes.STRING,
       image: DataTypes.STRING,
     },
     {

@@ -9,12 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      typeVi: {
+      nameVi: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      typeEn: {
+      nameEn: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,

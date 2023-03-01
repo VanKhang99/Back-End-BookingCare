@@ -3,12 +3,12 @@ const packageController = require("../controllers/packageController");
 
 const router = express.Router();
 
-router.get("/clinicId/:valueClinicId", packageController.handleGetAllPackagesByClinicId);
+router.get("/clinicId/:valueClinicId", packageController.getAllPackagesByClinicId);
 
-router.route("/").get(packageController.handleGetAllPackages).post(packageController.handleCreatePackage);
-router.get("/:packageId", packageController.handleGetPackage);
-router.delete("/:packageId", packageController.handleDeletePackage);
+router.route("/").get(packageController.getAllPackages).post(packageController.createPackage);
+router.get("/:packageId", packageController.getPackage);
+router.delete("/:packageId", packageController.deletePackage);
 
-router.get("/:specialtyId/:clinicId", packageController.handleGetAllPackagesByIds);
+router.get("/:specialtyId/:clinicId", packageController.getAllPackagesByIds);
 
 module.exports = router;

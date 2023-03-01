@@ -1,7 +1,8 @@
 const db = require("../models/index");
 const { Buffer } = require("buffer");
+const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
 
-exports.handleGetAllPackages = async (req, res) => {
+exports.getAllPackages = async (req, res) => {
   try {
     const packages = await db.Package.findAll();
 
@@ -20,7 +21,7 @@ exports.handleGetAllPackages = async (req, res) => {
   }
 };
 
-exports.handleGetAllPackagesByClinicId = async (req, res) => {
+exports.getAllPackagesByClinicId = async (req, res) => {
   try {
     const { valueClinicId } = req.params;
     const packages = await db.Package.findAll({
@@ -85,7 +86,7 @@ exports.handleGetAllPackagesByClinicId = async (req, res) => {
   }
 };
 
-exports.handleGetAllPackagesByIds = async (req, res) => {
+exports.getAllPackagesByIds = async (req, res) => {
   try {
     const { clinicId, specialtyId } = req.params;
     const data = await db.Package.findAll({
@@ -148,51 +149,22 @@ exports.handleGetAllPackagesByIds = async (req, res) => {
   }
 };
 
-exports.handleGetPackage = async (req, res) => {
+exports.getPackage = async (req, res) => {
   try {
-    const { packageId } = req.params;
+    const packageId = +req.params.packageId;
+    const packageData = await getOneImageFromS3("Package", +packageId);
 
-    const data = await db.Package.findOne({
-      where: { id: +packageId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      include: [
-        {
-          model: db.Allcode,
-          as: "pricePackage",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Clinic,
-          as: "clinicData",
-          attributes: ["logo"],
-        },
-        {
-          model: db.Allcode,
-          as: "clinicName",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
-
-    if (!data) {
+    if (!packageData) {
       return res.status(404).json({
         status: "error",
         message: "No data found with that ID. Please check your ID and try again!",
       });
     }
 
-    if (data.clinicData.logo) {
-      data.clinicData.logo = new Buffer(data.clinicData.logo, "base64").toString("binary");
-    }
-
     return res.status(200).json({
       status: "success",
       data: {
-        data,
+        data: packageData,
       },
     });
   } catch (error) {
@@ -204,9 +176,10 @@ exports.handleGetPackage = async (req, res) => {
   }
 };
 
-exports.handleCreatePackage = async (req, res) => {
+exports.createPackage = async (req, res) => {
   try {
     const data = { ...req.body };
+    console.log(data);
 
     if (data.action === "create") {
       const infoCreated = await db.Package.create(
@@ -216,14 +189,10 @@ exports.handleCreatePackage = async (req, res) => {
         { raw: true }
       );
 
-      if (infoCreated.image) {
-        infoCreated.image = new Buffer(infoCreated.image, "base64").toString("binary");
-      }
-
       return res.status(201).json({
         status: "success",
         data: {
-          info: infoCreated ? infoCreated : {},
+          info: infoCreated,
         },
       });
     }
@@ -234,7 +203,7 @@ exports.handleCreatePackage = async (req, res) => {
         updatedAt: new Date(),
       },
       {
-        where: { id: data.id },
+        where: { id: +data.id },
       }
     );
 
@@ -260,7 +229,7 @@ exports.handleCreatePackage = async (req, res) => {
   }
 };
 
-exports.handleDeletePackage = async (req, res) => {
+exports.deletePackage = async (req, res) => {
   try {
     const { packageId } = req.params;
 
@@ -287,3 +256,29 @@ exports.handleDeletePackage = async (req, res) => {
     });
   }
 };
+
+// const data = await db.Package.findOne({
+//   where: { id: +packageId },
+//   attributes: {
+//     exclude: ["createdAt", "updatedAt"],
+//   },
+//   include: [
+//     {
+//       model: db.Allcode,
+//       as: "pricePackage",
+//       attributes: ["valueEn", "valueVi"],
+//     },
+//     {
+//       model: db.Clinic,
+//       as: "clinicData",
+//       attributes: ["logo"],
+//     },
+//     {
+//       model: db.Allcode,
+//       as: "clinicName",
+//       attributes: ["valueEn", "valueVi"],
+//     },
+//   ],
+//   raw: true,
+//   nest: true,
+// });

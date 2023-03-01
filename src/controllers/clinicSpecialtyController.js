@@ -4,48 +4,16 @@ const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
 exports.getAllSpecialtiesByClinicId = async (req, res) => {
   try {
-    const { clinicId } = req.params;
+    const clinicId = +req.params.clinicId;
 
-    const specialties = await db.Clinic_Specialty.findAll({
-      where: { clinicId },
-      attributes: ["clinicId", "specialtyId", "address", "image"],
-      include: [
-        {
-          model: db.Allcode,
-          as: "nameSpecialty",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "nameClinic",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Clinic,
-          as: "moreData",
-          attributes: ["logo"],
-        },
-      ],
-      nest: true,
-      raw: true,
-    });
+    const specialties = await getManyImageFromS3("Clinic_Specialty", clinicId);
 
     if (!specialties.length) {
       return res.status(404).json({
         status: "error",
-        message: "Invalid clinicId!",
+        message: "No data found with that ID. Please check your ID and try again!",
       });
     }
-
-    specialties.forEach((specialty) => {
-      if (specialty?.image) {
-        specialty.image = new Buffer(specialty.image, "base64").toString("binary");
-      }
-
-      if (specialty?.moreData?.logo) {
-        specialty.moreData.logo = new Buffer(specialty.moreData.logo, "base64").toString("binary");
-      }
-    });
 
     return res.status(200).json({
       status: "success",
@@ -64,14 +32,14 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
 
 exports.getSpecialtyOfClinic = async (req, res) => {
   try {
-    const { specialtyId, clinicId } = req.params;
+    const { clinicId, specialtyId } = req.params;
 
     const specialtyClinicData = await getOneImageFromS3("Clinic_Specialty", clinicId, specialtyId);
 
     if (!specialtyClinicData) {
       return res.status(404).json({
         status: "error",
-        message: "No data found with that IDs. Please check your IDs and try again!",
+        message: "No data found with that ID. Please check your ID and try again!",
       });
     }
 

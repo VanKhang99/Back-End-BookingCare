@@ -3,10 +3,12 @@ const clinicSpecialtyController = require("../controllers/clinicSpecialtyControl
 
 const router = express.Router();
 
+router.post("/", clinicSpecialtyController.addUpdateSpecialtyClinic);
 router.get("/:clinicId", clinicSpecialtyController.getAllSpecialtiesByClinicId);
-router.get("/:clinicId/:specialtyId", clinicSpecialtyController.getSpecialtyOfClinic);
-router.post("/add-specialty", clinicSpecialtyController.addUpdateSpecialtyClinic);
 
-router.delete("/:specialtyId/:clinicId", clinicSpecialtyController.deleteSpecialtyClinic);
+router
+  .route("/:clinicId/:specialtyId")
+  .get(clinicSpecialtyController.getSpecialtyOfClinic)
+  .delete(clinicSpecialtyController.deleteSpecialtyClinic);
 
 module.exports = router;

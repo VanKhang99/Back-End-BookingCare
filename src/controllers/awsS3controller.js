@@ -47,7 +47,7 @@ exports.upLoadPhoto = upload.single("uploaded_file");
 //   }
 // }
 
-exports.getManyImageFromS3 = async (nameDB, type = null) => {
+exports.getManyImageFromS3 = async (nameDB, idFind = null) => {
   try {
     let data;
     if (nameDB === "Doctor_Info") {
@@ -80,10 +80,32 @@ exports.getManyImageFromS3 = async (nameDB, type = null) => {
         nest: true,
         raw: true,
       });
+    } else if (nameDB === "Clinic_Specialty") {
+      data = await db[nameDB].findAll({
+        where: { clinicId: +idFind },
+        attributes: ["clinicId", "specialtyId", "address", "image"],
+        include: [
+          {
+            model: db.Specialty,
+            as: "specialtyName",
+            attributes: ["nameVi", "nameEn"],
+          },
+          {
+            model: db.Clinic,
+            as: "clinicInfo",
+            attributes: ["nameVi", "nameEn", "image"],
+          },
+        ],
+        nest: true,
+        raw: true,
+      });
     } else {
-      data = await db[nameDB].findAll();
+      data = await db[nameDB].findAll({
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
     }
-    // console.log(data);
 
     const getObjectParams = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -106,6 +128,12 @@ exports.getManyImageFromS3 = async (nameDB, type = null) => {
         getObjectParams.Key = item.logo;
         const logoCommand = new GetObjectCommand(getObjectParams);
         item.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
+      }
+
+      if (nameDB === "Clinic_Specialty" && item.clinicInfo.image) {
+        getObjectParams.Key = item.clinicInfo.image;
+        const logoCommand = new GetObjectCommand(getObjectParams);
+        item.clinicInfo.imageUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
       }
 
       if (nameDB === "Specialty" && item.imageRemote) {
@@ -131,6 +159,23 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
           clinicId: +id,
           specialtyId: +id2,
         },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+        include: [
+          {
+            model: db.Specialty,
+            as: "specialtyName",
+            attributes: ["nameVi", "nameEn"],
+          },
+          {
+            model: db.Clinic,
+            as: "clinicInfo",
+            attributes: ["nameVi", "nameEn", "image", "logo", "processHTML", "priceHTML", "noteHTML"],
+          },
+        ],
+        nest: true,
+        raw: true,
       });
     } else if (nameDB === "User") {
       data = await db.User.findOne({
@@ -218,6 +263,18 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
       getObjectParams.Key = data.logo;
       const logoCommand = new GetObjectCommand(getObjectParams);
       data.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
+    }
+
+    if (nameDB === "Clinic_Specialty" && data.clinicInfo.logo) {
+      getObjectParams.Key = data.clinicInfo.logo;
+      const logoCommand = new GetObjectCommand(getObjectParams);
+      data.clinicInfo.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
+    }
+
+    if (nameDB === "Clinic_Specialty" && data.clinicInfo.image) {
+      getObjectParams.Key = data.clinicInfo.image;
+      const logoCommand = new GetObjectCommand(getObjectParams);
+      data.clinicInfo.imageUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
     }
 
     if (nameDB === "Specialty" && data.imageRemote) {

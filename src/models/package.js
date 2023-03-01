@@ -48,14 +48,17 @@ module.exports = (sequelize, DataTypes) => {
   }
   Package.init(
     {
-      clinicId: DataTypes.STRING,
-      specialtyId: DataTypes.STRING,
+      clinicId: DataTypes.INTEGER,
+      specialtyId: DataTypes.INTEGER,
+      packageTypeId: DataTypes.INTEGER,
       priceId: DataTypes.STRING,
       provinceId: DataTypes.STRING,
       paymentId: DataTypes.STRING,
 
       nameVi: DataTypes.STRING,
       nameEn: DataTypes.STRING,
+      image: DataTypes.STRING,
+      popular: DataTypes.BOOLEAN,
       address: DataTypes.STRING,
 
       introductionHTML: DataTypes.TEXT("long"),

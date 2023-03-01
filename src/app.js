@@ -52,7 +52,7 @@ app.use("/api/schedules", scheduleRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/specialties", specialtyRouter);
 app.use("/api/clinics", clinicRouter);
-app.use("/api/clinics-specialties", clinicSpecialtyRouter);
+app.use("/api/clinic/specialties", clinicSpecialtyRouter);
 app.use("/api/packages", packageRouter);
 app.use("/api/packages-type", packageTypeRouter);
 app.use("/api/awsS3", awsS3router);

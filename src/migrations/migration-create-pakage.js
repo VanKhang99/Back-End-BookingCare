@@ -10,12 +10,16 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       clinicId: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       specialtyId: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      packageTypeId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       priceId: {
         type: Sequelize.STRING,
@@ -40,42 +44,52 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      image: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      popular: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
       address: {
         type: Sequelize.STRING,
         allowNull: false,
       },
 
       introductionHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       introductionMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       contentHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       contentMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       listExaminationHTML: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       listExaminationMarkdown: {
-        type: Sequelize.TEXT("long"),
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("NOW()"),
       },
     });
   },
