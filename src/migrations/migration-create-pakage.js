@@ -50,7 +50,8 @@ module.exports = {
       },
       popular: {
         type: Sequelize.BOOLEAN,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: false,
       },
       address: {
         type: Sequelize.STRING,

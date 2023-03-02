@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       //PACKAGE
       Clinic.hasMany(models.Package, {
         foreignKey: "clinicId",
-        as: "clinicInfo",
+        as: "clinicData",
       });
 
       //CLINIC_SPECIALTY

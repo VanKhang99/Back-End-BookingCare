@@ -88,56 +88,61 @@ exports.getAllPackagesByClinicId = async (req, res) => {
 
 exports.getAllPackagesByIds = async (req, res) => {
   try {
-    const { clinicId, specialtyId } = req.params;
-    const data = await db.Package.findAll({
-      where: { specialtyId, clinicId },
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-      include: [
-        {
-          model: db.Allcode,
-          as: "pricePackage",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "provincePackage",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Clinic,
-          as: "clinicData",
-          attributes: ["logo"],
-        },
-        {
-          model: db.Allcode,
-          as: "clinicName",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
+    const clinicId = +req.params.clinicId;
+    const specialtyId = +req.params.specialtyId;
+    console.log(specialtyId);
+    console.log(clinicId);
+    const packages = await getManyImageFromS3("Package", clinicId, specialtyId);
+    console.log(packages);
+    // const data = await db.Package.findAll({
+    //   where: { specialtyId, clinicId },
+    //   attributes: {
+    //     exclude: ["createdAt", "updatedAt"],
+    //   },
+    //   include: [
+    //     {
+    //       model: db.Allcode,
+    //       as: "pricePackage",
+    //       attributes: ["valueEn", "valueVi"],
+    //     },
+    //     {
+    //       model: db.Allcode,
+    //       as: "provincePackage",
+    //       attributes: ["valueEn", "valueVi"],
+    //     },
+    //     {
+    //       model: db.Clinic,
+    //       as: "clinicData",
+    //       attributes: ["logo"],
+    //     },
+    //     {
+    //       model: db.Allcode,
+    //       as: "clinicName",
+    //       attributes: ["valueEn", "valueVi"],
+    //     },
+    //   ],
+    //   raw: true,
+    //   nest: true,
+    // });
 
-    if (!data.length) {
-      return res.status(404).json({
-        status: "error",
-        message: "No data found with that ID. Please check your ID and try again!",
-      });
-    }
+    // if (!data.length) {
+    //   return res.status(404).json({
+    //     status: "error",
+    //     message: "No data found with that ID. Please check your ID and try again!",
+    //   });
+    // }
 
-    if (data.length > 0) {
-      data.forEach((pk) => {
-        pk.clinicData.logo = new Buffer(pk.clinicData.logo, "base64").toString("binary");
-      });
-    }
+    // if (data.length > 0) {
+    //   data.forEach((pk) => {
+    //     pk.clinicData.logo = new Buffer(pk.clinicData.logo, "base64").toString("binary");
+    //   });
+    // }
 
     return res.status(200).json({
       status: "success",
-      results: data.length,
+      results: packages.length,
       data: {
-        packages: data,
+        data: packages,
       },
     });
   } catch (error) {
@@ -179,7 +184,6 @@ exports.getPackage = async (req, res) => {
 exports.createPackage = async (req, res) => {
   try {
     const data = { ...req.body };
-    console.log(data);
 
     if (data.action === "create") {
       const infoCreated = await db.Package.create(

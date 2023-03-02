@@ -18,36 +18,7 @@ const s3 = new S3Client({
 
 exports.upLoadPhoto = upload.single("uploaded_file");
 
-// exports.getImagesFromS3ForUsers = async(roleIdToMap, limit, offset) => {
-//   try {
-//     const data = await db.User.findAll({
-//       where: { ...(roleIdToMap !== "ALL" && { roleId: roleIdToMap }) },
-//       attributes: {
-//         exclude: ["password"],
-//       },
-//       ...(offset >= 0 && { offset }),
-//       ...(limit > 0 && { limit }),
-//     });
-
-//     const getObjectParams = {
-//       Bucket: process.env.AWS_S3_BUCKET_NAME,
-//     };
-
-//     for (const item of data) {
-//       if (item.image) {
-//         getObjectParams.Key = item.image;
-//         const imageCommand = new GetObjectCommand(getObjectParams);
-//         item.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
-//       }
-//     }
-
-//     return data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-exports.getManyImageFromS3 = async (nameDB, idFind = null) => {
+exports.getManyImageFromS3 = async (nameDB, idFind1 = null, idFind2 = null) => {
   try {
     let data;
     if (nameDB === "Doctor_Info") {
@@ -82,7 +53,7 @@ exports.getManyImageFromS3 = async (nameDB, idFind = null) => {
       });
     } else if (nameDB === "Clinic_Specialty") {
       data = await db[nameDB].findAll({
-        where: { clinicId: +idFind },
+        where: { clinicId: +idFind1 },
         attributes: ["clinicId", "specialtyId", "address", "image"],
         include: [
           {
@@ -99,6 +70,25 @@ exports.getManyImageFromS3 = async (nameDB, idFind = null) => {
         nest: true,
         raw: true,
       });
+    } else if (nameDB === "Package") {
+      data = await db[nameDB].findAll({
+        where: {
+          ...(idFind2 && { specialtyId: idFind2 }),
+          ...(idFind1 && { clinicId: idFind1 }),
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", ""],
+        },
+        include: [
+          {
+            model: db.Clinic,
+            as: "clinicData",
+            // attributes: ["keyMap", "valueEn", "valueVi"],
+          },
+        ],
+        nest: true,
+        raw: true,
+      });
     } else {
       data = await db[nameDB].findAll({
         attributes: {
@@ -106,6 +96,8 @@ exports.getManyImageFromS3 = async (nameDB, idFind = null) => {
         },
       });
     }
+
+    // console.log(data);
 
     const getObjectParams = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -238,6 +230,37 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
                 attributes: ["keyMap", "valueEn", "valueVi"],
               },
             ],
+          },
+        ],
+        nest: true,
+        raw: true,
+      });
+    } else if (nameDB === "Package") {
+      data = await db[nameDB].findOne({
+        where: { id },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId"],
+        },
+        include: [
+          {
+            model: db.Clinic,
+            as: "clinicData",
+            attributes: ["nameVi", "nameEn"],
+          },
+          {
+            model: db.Allcode,
+            as: "pricePackage",
+            attributes: ["keyMap", "valueEn", "valueVi"],
+          },
+          {
+            model: db.Allcode,
+            as: "provincePackage",
+            attributes: ["keyMap", "valueEn", "valueVi"],
+          },
+          {
+            model: db.Allcode,
+            as: "paymentPackage",
+            attributes: ["keyMap", "valueEn", "valueVi"],
           },
         ],
         nest: true,
