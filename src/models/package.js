@@ -34,6 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "clinicData",
       });
+
+      //SPECIALTY
+      Package.belongsTo(models.Specialty, {
+        foreignKey: "specialtyId",
+        targetKey: "id",
+        as: "specialty",
+      });
     }
   }
   Package.init(

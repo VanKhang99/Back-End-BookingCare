@@ -26,12 +26,17 @@ const userIsExisted = async (email) => {
   };
 };
 
-const quantityBooked = async (doctorId, timeType) => {
+const quantityBooked = async (id, timeType, idBookingFor) => {
   const dataHourBooked = await db.Schedule.findOne({
-    where: { doctorId, timeType },
+    where: {
+      [`${idBookingFor}`]: id,
+      timeType,
+    },
     attributes: ["currentNumber", "maxNumber", "timeType"],
     raw: true,
   });
+
+  console.log(dataHourBooked);
 
   return {
     data: dataHourBooked,
@@ -73,10 +78,6 @@ exports.handleCreateBooking = async (req, res) => {
       remote,
     } = req.body;
 
-    // console.log(dateBooked)
-    // console.log(priceId)
-    // console.log(timeFrame)
-
     if (!email || !birthday || !timeType || !dateBooked || !priceId || !timeFrame) {
       return res.status(400).json({
         status: "error",
@@ -86,7 +87,8 @@ exports.handleCreateBooking = async (req, res) => {
 
     const token = uuidv4();
     const checkEmail = await userIsExisted(email);
-    const checkHourQuantityBooked = await quantityBooked(doctorId || packageId, timeType);
+    const idBookingFor = doctorName ? "doctorId" : "packageId";
+    const checkHourQuantityBooked = await quantityBooked(doctorId || packageId, timeType, idBookingFor);
     let booking;
 
     if (checkEmail.result) {
@@ -195,6 +197,7 @@ exports.handleCreateBooking = async (req, res) => {
       }
     }
 
+    console.log(clinicName);
     if (booking.dataValues.statusId === "S1") {
       const personNameBook = language === "vi" ? `${lastName} ${firstName}` : `${firstName} ${lastName}`;
       await sendEmail({

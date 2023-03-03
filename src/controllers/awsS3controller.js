@@ -23,7 +23,7 @@ exports.getManyImageFromS3 = async (nameDB, idFind1 = null, idFind2 = null) => {
     let data;
     if (nameDB === "Doctor_Info") {
       data = await db[nameDB].findAll({
-        attributes: ["doctorId", "popular"],
+        attributes: ["doctorId", "popular", "remote"],
         include: [
           {
             model: db.User,
@@ -173,7 +173,7 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
       data = await db.User.findOne({
         where: { id },
         attributes: {
-          exclude: ["createdAt", "updatedAt", "password"],
+          exclude: ["createdAt", "updatedAt"],
         },
         include: [
           {
@@ -239,13 +239,18 @@ exports.getOneImageFromS3 = async (nameDB, id, id2 = null) => {
       data = await db[nameDB].findOne({
         where: { id },
         attributes: {
-          exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId"],
+          exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId", "specialtyId"],
         },
         include: [
           {
             model: db.Clinic,
             as: "clinicData",
             attributes: ["nameVi", "nameEn"],
+          },
+          {
+            model: db.Specialty,
+            as: "specialty",
+            attributes: ["id", "nameVi", "nameEn"],
           },
           {
             model: db.Allcode,

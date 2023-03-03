@@ -9,19 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      currentNumber: {
-        type: Sequelize.INTEGER,
-      },
-      maxNumber: {
-        type: Sequelize.INTEGER,
-        defaultValue: 5,
-      },
-      date: {
-        type: Sequelize.STRING,
-      },
-      timeType: {
-        type: Sequelize.STRING,
-      },
       doctorId: {
         allowNull: true,
         type: Sequelize.INTEGER,
@@ -29,6 +16,22 @@ module.exports = {
       packageId: {
         type: Sequelize.INTEGER,
         allowNull: true,
+      },
+      currentNumber: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      maxNumber: {
+        type: Sequelize.INTEGER,
+        defaultValue: 5,
+      },
+      date: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      timeType: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       frameTimestamp: {
         type: Sequelize.STRING,

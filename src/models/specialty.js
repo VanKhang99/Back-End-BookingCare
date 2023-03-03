@@ -20,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "specialtyId",
         as: "specialtyName",
       });
+
+      //PACKAGE
+      Specialty.hasMany(models.Package, {
+        foreignKey: "specialtyId",
+        as: "specialty",
+      });
     }
   }
   Specialty.init(
