@@ -6,7 +6,24 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
   try {
     const clinicId = +req.params.clinicId;
 
-    const specialties = await getManyImageFromS3("Clinic_Specialty", clinicId);
+    const specialties = await db.Clinic_Specialty.findAll({
+      where: { clinicId: +clinicId },
+      attributes: ["clinicId", "specialtyId", "address", "image"],
+      include: [
+        {
+          model: db.Specialty,
+          as: "specialtyName",
+          attributes: ["nameVi", "nameEn"],
+        },
+        {
+          model: db.Clinic,
+          as: "clinicInfo",
+          attributes: ["nameVi", "nameEn", "image"],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
 
     if (!specialties.length) {
       return res.status(404).json({
@@ -15,10 +32,12 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
       });
     }
 
+    const specialtiesData = await getManyImageFromS3("Clinic_Specialty", specialties);
+
     return res.status(200).json({
       status: "success",
       data: {
-        data: specialties,
+        data: specialtiesData,
       },
     });
   } catch (error) {
@@ -30,18 +49,41 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
   }
 };
 
-exports.getSpecialtyOfClinic = async (req, res) => {
+exports.getAllSpecialtiesOfClinic = async (req, res) => {
   try {
     const { clinicId, specialtyId } = req.params;
+    const specialtyClinic = await db.Clinic_Specialty.findOne({
+      where: {
+        clinicId: +clinicId,
+        specialtyId: +specialtyId,
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: db.Specialty,
+          as: "specialtyName",
+          attributes: ["nameVi", "nameEn"],
+        },
+        {
+          model: db.Clinic,
+          as: "clinicInfo",
+          attributes: ["nameVi", "nameEn", "image", "logo", "processHTML", "priceHTML", "noteHTML"],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
 
-    const specialtyClinicData = await getOneImageFromS3("Clinic_Specialty", clinicId, specialtyId);
-
-    if (!specialtyClinicData) {
+    if (!specialtyClinic) {
       return res.status(404).json({
         status: "error",
-        message: "No data found with that ID. Please check your ID and try again!",
+        message: "No data found with that IDs. Please check your IDs and try again!",
       });
     }
+
+    const specialtyClinicData = await getOneImageFromS3("Clinic_Specialty", specialtyClinic);
 
     return res.status(200).json({
       status: "success",

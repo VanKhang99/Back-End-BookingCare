@@ -27,14 +27,18 @@ exports.getAllPackagesType = async (req, res) => {
 exports.getPackageType = async (req, res) => {
   try {
     const { packageTypeId } = req.params;
-    const dataPackagesType = await getOneImageFromS3("Package_Type", +packageTypeId);
+    const packagesType = await db.Package_Type.findOne({
+      where: { id: packageTypeId },
+    });
 
-    if (!dataPackagesType) {
+    if (!packagesType) {
       return res.status(404).json({
         status: "error",
         message: "No data found with that ID. Please check your ID and try again!",
       });
     }
+
+    const dataPackagesType = await getOneImageFromS3("Package_Type", packagesType);
 
     return res.status(200).json({
       status: "success",

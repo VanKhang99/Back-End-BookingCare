@@ -2,25 +2,35 @@ const db = require("../models/index");
 const { Buffer } = require("buffer");
 const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
 
-exports.getAllClinic = async (req, res) => {
+exports.getAllClinics = async (req, res) => {
   try {
     const { type } = req.params;
+    const clinics = await db.Clinic.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+    });
 
-    let clinics = await getManyImageFromS3("Clinic");
-
-    if (type === "popular") {
-      clinics = clinics.filter((clinic) => clinic.popular);
-    }
-
-    if (clinics?.length > 0) {
-      return res.status(200).json({
-        status: "success",
-        results: clinics.length,
-        data: {
-          clinics,
-        },
+    if (!clinics.length) {
+      return res.status(404).json({
+        status: "error",
+        message: "Something went wrong!",
       });
     }
+
+    let clinicsData = await getManyImageFromS3("Clinic", clinics);
+
+    if (type === "popular") {
+      clinicsData = clinicsData.filter((clinic) => clinic.popular);
+    }
+
+    return res.status(200).json({
+      status: "success",
+      results: clinicsData.length,
+      data: {
+        clinics: clinicsData,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -33,14 +43,18 @@ exports.getAllClinic = async (req, res) => {
 exports.getClinic = async (req, res) => {
   try {
     const clinicId = +req.params.clinicId;
-    const dataClinic = await getOneImageFromS3("Clinic", +clinicId);
+    const clinic = await db.Clinic.findOne({
+      where: { id: clinicId },
+    });
 
-    if (!dataClinic) {
+    if (!clinic) {
       return res.status(404).json({
         status: "error",
         message: "No data found with that ID. Please check your ID and try again!",
       });
     }
+
+    const dataClinic = await getOneImageFromS3("Clinic", clinic);
 
     return res.status(200).json({
       status: "success",

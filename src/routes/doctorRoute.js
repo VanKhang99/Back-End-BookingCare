@@ -5,10 +5,11 @@ const router = express.Router();
 
 router.get("/:type", doctorController.getAllDoctors);
 router.post("/", doctorController.saveInfoDoctor);
-router.delete("/:doctorId", doctorController.deleteDoctor);
-router.get("/detail/:doctorId", doctorController.getDetailDoctor);
-router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);
 
-// router.get("/address-price-assurance/:doctorId", doctorController.getInfoAddressPriceAssurance);
+router.get("/detail/:doctorId", doctorController.getDoctor);
+router.get("/:nameColumnMap/:id", doctorController.getAllDoctorsById);
+router.delete("/:doctorId", doctorController.deleteDoctor);
+
+router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);
 
 module.exports = router;

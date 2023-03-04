@@ -71,7 +71,9 @@ exports.getAllUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const userId = +req.params.id;
-    const user = await getOneImageFromS3("User", userId);
+    const user = await db.User.findOne({
+      where: { id: userId },
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -80,10 +82,13 @@ exports.getUser = async (req, res) => {
       });
     }
 
+    const userData = await getOneImageFromS3("User", user);
+    console.log(userData);
+
     return res.status(200).json({
       status: "success",
       data: {
-        data: user,
+        data: userData,
       },
     });
   } catch (error) {

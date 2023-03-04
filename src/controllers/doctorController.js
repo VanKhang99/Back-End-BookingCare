@@ -6,13 +6,43 @@ const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 exports.getAllDoctors = async (req, res) => {
   try {
     const { type } = req.params;
-    let dataDoctors = await getManyImageFromS3("Doctor_Info");
+    const doctors = await db.Doctor_Info.findAll({
+      attributes: ["doctorId", "popular", "remote"],
+      include: [
+        {
+          model: db.User,
+          as: "moreData",
+          attributes: ["id", "firstName", "lastName", "image", "roleId", "positionId"],
+          include: [
+            {
+              model: db.Allcode,
+              as: "roleData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+            {
+              model: db.Allcode,
+              as: "positionData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+          ],
+        },
+        {
+          model: db.Specialty,
+          as: "specialtyData",
+          attributes: ["id", "nameEn", "nameVi"],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
 
-    if (!dataDoctors.length)
+    if (!doctors.length)
       return res.status(400).json({
         status: "error",
         message: "Something went wrong!",
       });
+
+    let dataDoctors = await getManyImageFromS3("Doctor_Info", doctors);
 
     if (type === "popular") {
       dataDoctors = dataDoctors.filter((doctor) => doctor.popular);
@@ -37,7 +67,66 @@ exports.getAllDoctors = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Get all doctor error from the server.",
+      message: "Get all doctors error from the server.",
+    });
+  }
+};
+
+exports.getAllDoctorsById = async (req, res) => {
+  try {
+    const { nameColumnMap, id } = req.params;
+    const doctors = await db.Doctor_Info.findAll({
+      where: {
+        [`${nameColumnMap}`]: +id,
+      },
+      include: [
+        {
+          model: db.User,
+          as: "moreData",
+          attributes: ["id", "firstName", "lastName", "image", "roleId", "positionId"],
+          include: [
+            {
+              model: db.Allcode,
+              as: "roleData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+            {
+              model: db.Allcode,
+              as: "positionData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+          ],
+        },
+        {
+          model: db.Specialty,
+          as: "specialtyData",
+          attributes: ["id", "nameEn", "nameVi"],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
+
+    if (!doctors.length) {
+      return res.status(404).json({
+        status: "error",
+        message: "No data found with that ID. Please check your ID and try again!",
+      });
+    }
+
+    let dataDoctors = await getManyImageFromS3("Doctor_Info", doctors);
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        doctors: dataDoctors,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Error get all doctors by id from the server.",
     });
   }
 };
@@ -209,10 +298,76 @@ exports.saveInfoDoctor = async (req, res) => {
   }
 };
 
-exports.getDetailDoctor = async (req, res) => {
+exports.getDoctor = async (req, res) => {
   try {
     const doctorId = +req.params.doctorId;
-    const doctorData = await getOneImageFromS3("User", doctorId);
+    const doctor = await db.User.findOne({
+      where: { id: doctorId },
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: db.Allcode,
+          as: "positionData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "roleData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Doctor_Info,
+          as: "moreData",
+          attributes: {
+            exclude: [
+              "doctorId",
+              "id",
+              "nameClinic",
+              "provinceId",
+              "paymentId",
+              "priceId",
+              "clinicId",
+              "specialtyId",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+          include: [
+            {
+              model: db.Clinic,
+              as: "clinic",
+              attributes: ["id", "nameEn", "nameVi", "address"],
+            },
+            {
+              model: db.Specialty,
+              as: "specialtyData",
+              attributes: ["id", "nameEn", "nameVi"],
+            },
+            {
+              model: db.Allcode,
+              as: "provinceData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+            {
+              model: db.Allcode,
+              as: "paymentData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+            {
+              model: db.Allcode,
+              as: "priceData",
+              attributes: ["keyMap", "valueEn", "valueVi"],
+            },
+          ],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
+
+    const doctorData = await getOneImageFromS3("User", doctor);
 
     if (!doctorData) {
       return res.status(400).json({
@@ -262,65 +417,3 @@ exports.deleteDoctor = async (req, res) => {
     });
   }
 };
-
-// exports.getInfoAddressPriceAssurance = async (req, res) => {
-//   try {
-//     const id = +req.params.doctorId;
-
-//     if (!id) {
-//       return res.status(404).json({
-//         status: "error",
-//         message: "The doctor you are looking for does not exist!",
-//       });
-//     }
-
-//     const info = await db.Doctor_Info.findOne({
-//       where: { doctorId: id },
-//       attributes: {
-//         exclude: ["paymentId", "provinceId", "createdAt", "updatedAt"],
-//       },
-//       include: [
-//         {
-//           model: db.Allcode,
-//           as: "priceData",
-//           attributes: ["valueEn", "valueVi"],
-//         },
-//         {
-//           model: db.Allcode,
-//           as: "provinceData",
-//           attributes: ["valueEn", "valueVi"],
-//         },
-//         {
-//           model: db.Allcode,
-//           as: "paymentData",
-//           attributes: ["valueEn", "valueVi"],
-//         },
-//         {
-//           model: db.Allcode,
-//           as: "specialtyData",
-//           attributes: ["valueEn", "valueVi"],
-//         },
-//         {
-//           model: db.Allcode,
-//           as: "clinicData",
-//           attributes: ["valueEn", "valueVi"],
-//         },
-//       ],
-//       raw: true,
-//       nest: true,
-//     });
-
-//     return res.status(200).json({
-//       status: "success",
-//       data: {
-//         data: info ? info : {},
-//       },
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       status: "error",
-//       message: "Get info address price assurance error from the server.",
-//     });
-//   }
-// };

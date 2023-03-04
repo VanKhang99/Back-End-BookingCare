@@ -8,7 +8,7 @@ router.get("/:clinicId", clinicSpecialtyController.getAllSpecialtiesByClinicId);
 
 router
   .route("/:clinicId/:specialtyId")
-  .get(clinicSpecialtyController.getSpecialtyOfClinic)
+  .get(clinicSpecialtyController.getAllSpecialtiesOfClinic)
   .delete(clinicSpecialtyController.deleteSpecialtyClinic);
 
 module.exports = router;
