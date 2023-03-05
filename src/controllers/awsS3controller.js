@@ -75,6 +75,12 @@ exports.getOneImageFromS3 = async (nameDB, data) => {
       data.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
     }
 
+    if (nameDB === "Doctor_Info") {
+      getObjectParams.Key = data.moreData.image;
+      const imageCommand = new GetObjectCommand(getObjectParams);
+      data.moreData.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
+    }
+
     if (nameDB === "Clinic" && data.logo) {
       getObjectParams.Key = data.logo;
       const logoCommand = new GetObjectCommand(getObjectParams);

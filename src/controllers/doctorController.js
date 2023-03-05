@@ -79,6 +79,9 @@ exports.getAllDoctorsById = async (req, res) => {
       where: {
         [`${nameColumnMap}`]: +id,
       },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "provinceId", "priceId", "paymentId", "specialtyId"],
+      },
       include: [
         {
           model: db.User,
@@ -98,9 +101,29 @@ exports.getAllDoctorsById = async (req, res) => {
           ],
         },
         {
+          model: db.Clinic,
+          as: "clinic",
+          attributes: ["nameEn", "nameVi", "address"],
+        },
+        {
           model: db.Specialty,
           as: "specialtyData",
           attributes: ["id", "nameEn", "nameVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "priceData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "paymentData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "provinceData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
         },
       ],
       nest: true,
@@ -127,90 +150,6 @@ exports.getAllDoctorsById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Error get all doctors by id from the server.",
-    });
-  }
-};
-
-exports.getDoctorsBaseKeyMap = async (req, res) => {
-  try {
-    const { keyMapId, remote } = req.params;
-    const columnMap = keyMapId.startsWith("SPE") ? "specialtyId" : "clinicId";
-    // console.log(columnMap);
-
-    if (!keyMapId) {
-      return res.status(400).json({
-        status: "error",
-        message: "Invalid input keyMapId. Please check and try again!",
-      });
-    }
-
-    const doctors = await db.Doctor_Info.findAll({
-      where: { [`${columnMap}`]: keyMapId, remote },
-      include: [
-        {
-          model: db.User,
-          as: "anotherInfo",
-          attributes: {
-            exclude: ["password", "createdAt", "updatedAt"],
-          },
-          include: [
-            {
-              model: db.Allcode,
-              as: "positionData",
-              attributes: ["valueEn", "valueVi"],
-            },
-            {
-              model: db.Allcode,
-              as: "roleData",
-              attributes: ["valueEn", "valueVi"],
-            },
-          ],
-        },
-        {
-          model: db.Allcode,
-          as: "paymentData",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "priceData",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "provinceData",
-          attributes: ["valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "specialtyData",
-          attributes: ["valueEn", "valueVi"],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
-
-    if (doctors.length > 0) {
-      doctors.forEach((doctor) => {
-        if (doctor?.anotherInfo?.image) {
-          doctor.anotherInfo.image = new Buffer(doctor.anotherInfo.image, "base64").toString("binary");
-        }
-      });
-    }
-
-    return res.status(200).json({
-      status: "success",
-      results: doctors.length,
-      data: {
-        data: doctors,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: "Get all doctor belong to a specialty error from the server.",
     });
   }
 };
@@ -301,73 +240,63 @@ exports.saveInfoDoctor = async (req, res) => {
 exports.getDoctor = async (req, res) => {
   try {
     const doctorId = +req.params.doctorId;
-    const doctor = await db.User.findOne({
-      where: { id: doctorId },
+    const doctor = await db.Doctor_Info.findOne({
+      where: {
+        doctorId,
+      },
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["createdAt", "updatedAt", "provinceId", "priceId", "paymentId", "specialtyId"],
       },
       include: [
         {
-          model: db.Allcode,
-          as: "positionData",
-          attributes: ["keyMap", "valueEn", "valueVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "roleData",
-          attributes: ["keyMap", "valueEn", "valueVi"],
-        },
-        {
-          model: db.Doctor_Info,
+          model: db.User,
           as: "moreData",
-          attributes: {
-            exclude: [
-              "doctorId",
-              "id",
-              "nameClinic",
-              "provinceId",
-              "paymentId",
-              "priceId",
-              "clinicId",
-              "specialtyId",
-              "createdAt",
-              "updatedAt",
-            ],
-          },
+          attributes: ["id", "firstName", "lastName", "image", "roleId", "positionId"],
           include: [
             {
-              model: db.Clinic,
-              as: "clinic",
-              attributes: ["id", "nameEn", "nameVi", "address"],
-            },
-            {
-              model: db.Specialty,
-              as: "specialtyData",
-              attributes: ["id", "nameEn", "nameVi"],
-            },
-            {
               model: db.Allcode,
-              as: "provinceData",
+              as: "roleData",
               attributes: ["keyMap", "valueEn", "valueVi"],
             },
             {
               model: db.Allcode,
-              as: "paymentData",
-              attributes: ["keyMap", "valueEn", "valueVi"],
-            },
-            {
-              model: db.Allcode,
-              as: "priceData",
+              as: "positionData",
               attributes: ["keyMap", "valueEn", "valueVi"],
             },
           ],
+        },
+        {
+          model: db.Clinic,
+          as: "clinic",
+          attributes: ["nameEn", "nameVi", "address"],
+        },
+
+        {
+          model: db.Specialty,
+          as: "specialtyData",
+          attributes: ["id", "nameEn", "nameVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "priceData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "paymentData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "provinceData",
+          attributes: ["keyMap", "valueEn", "valueVi"],
         },
       ],
       nest: true,
       raw: true,
     });
 
-    const doctorData = await getOneImageFromS3("User", doctor);
+    const doctorData = await getOneImageFromS3("Doctor_Info", doctor);
 
     if (!doctorData) {
       return res.status(400).json({
@@ -417,3 +346,87 @@ exports.deleteDoctor = async (req, res) => {
     });
   }
 };
+
+// exports.getDoctorsBaseKeyMap = async (req, res) => {
+//   try {
+//     const { keyMapId, remote } = req.params;
+//     const columnMap = keyMapId.startsWith("SPE") ? "specialtyId" : "clinicId";
+//     // console.log(columnMap);
+
+//     if (!keyMapId) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "Invalid input keyMapId. Please check and try again!",
+//       });
+//     }
+
+//     const doctors = await db.Doctor_Info.findAll({
+//       where: { [`${columnMap}`]: keyMapId, remote },
+//       include: [
+//         {
+//           model: db.User,
+//           as: "anotherInfo",
+//           attributes: {
+//             exclude: ["password", "createdAt", "updatedAt"],
+//           },
+//           include: [
+//             {
+//               model: db.Allcode,
+//               as: "positionData",
+//               attributes: ["valueEn", "valueVi"],
+//             },
+//             {
+//               model: db.Allcode,
+//               as: "roleData",
+//               attributes: ["valueEn", "valueVi"],
+//             },
+//           ],
+//         },
+//         {
+//           model: db.Allcode,
+//           as: "paymentData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//         {
+//           model: db.Allcode,
+//           as: "priceData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//         {
+//           model: db.Allcode,
+//           as: "provinceData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//         {
+//           model: db.Allcode,
+//           as: "specialtyData",
+//           attributes: ["valueEn", "valueVi"],
+//         },
+//       ],
+//       raw: true,
+//       nest: true,
+//     });
+
+//     if (doctors.length > 0) {
+//       doctors.forEach((doctor) => {
+//         if (doctor?.anotherInfo?.image) {
+//           doctor.anotherInfo.image = new Buffer(doctor.anotherInfo.image, "base64").toString("binary");
+//         }
+//       });
+//     }
+
+//     return res.status(200).json({
+//       status: "success",
+//       results: doctors.length,
+//       data: {
+//         data: doctors,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       status: "error",
+//       message: "Get all doctor belong to a specialty error from the server.",
+//     });
+//   }
+// };

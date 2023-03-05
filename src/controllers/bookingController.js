@@ -277,9 +277,10 @@ exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
   try {
     const { doctorId, dateBooked } = req.params;
     console.log(dateBooked);
+    console.log(doctorId);
 
     const patients = await db.Booking.findAll({
-      where: { doctorId, statusId: "S2", dateBooked },
+      where: { doctorId: +doctorId, statusId: "S2", dateBooked },
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },

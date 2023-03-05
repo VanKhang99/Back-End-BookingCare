@@ -10,6 +10,6 @@ router.get("/detail/:doctorId", doctorController.getDoctor);
 router.get("/:nameColumnMap/:id", doctorController.getAllDoctorsById);
 router.delete("/:doctorId", doctorController.deleteDoctor);
 
-router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);
+// router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);
 
 module.exports = router;
