@@ -5,16 +5,23 @@ const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./
 
 exports.getAllPackagesType = async (req, res) => {
   try {
-    const dataPackagesType = await getManyImageFromS3("Package_Type");
+    const packagesType = await db.Package_Type.findAll();
+
+    if (!packagesType.length) {
+      return res.status(404).json({
+        status: "error",
+        message: "Something went wrong",
+      });
+    }
+
+    const dataPackagesType = await getManyImageFromS3("Package_Type", packagesType);
 
     return res.status(200).json({
       status: "success",
       data: {
-        packages: dataPackagesType.length ? dataPackagesType : [],
+        packages: dataPackagesType,
       },
     });
-
-    console.log(dataPackagesType);
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -27,8 +34,9 @@ exports.getAllPackagesType = async (req, res) => {
 exports.getPackageType = async (req, res) => {
   try {
     const { packageTypeId } = req.params;
+
     const packagesType = await db.Package_Type.findOne({
-      where: { id: packageTypeId },
+      where: { id: +packageTypeId },
     });
 
     if (!packagesType) {

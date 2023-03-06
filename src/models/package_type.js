@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Package_Type.hasMany(models.Package, {
+        foreignKey: "packageTypeId",
+        as: "packageType",
+      });
     }
   }
   Package_Type.init(

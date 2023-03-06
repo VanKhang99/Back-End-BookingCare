@@ -74,10 +74,28 @@ exports.getAllDoctors = async (req, res) => {
 
 exports.getAllDoctorsById = async (req, res) => {
   try {
-    const { nameColumnMap, id } = req.params;
+    const { nameColumnMap, id, type } = req.params;
+
+    let objectWhereForQuery;
+    if (type === "includeTrueAndFalse") {
+      objectWhereForQuery = {
+        [`${nameColumnMap}`]: +id,
+      };
+    } else if (type === "includeOnlyTrue") {
+      objectWhereForQuery = {
+        [`${nameColumnMap}`]: +id,
+        remote: true,
+      };
+    } else if (type === "includeOnlyFalse") {
+      objectWhereForQuery = {
+        [`${nameColumnMap}`]: +id,
+        remote: false,
+      };
+    }
+
     const doctors = await db.Doctor_Info.findAll({
       where: {
-        [`${nameColumnMap}`]: +id,
+        ...objectWhereForQuery,
       },
       attributes: {
         exclude: ["createdAt", "updatedAt", "provinceId", "priceId", "paymentId", "specialtyId"],

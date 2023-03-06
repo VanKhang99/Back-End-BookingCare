@@ -7,7 +7,7 @@ router.get("/:type", doctorController.getAllDoctors);
 router.post("/", doctorController.saveInfoDoctor);
 
 router.get("/detail/:doctorId", doctorController.getDoctor);
-router.get("/:nameColumnMap/:id", doctorController.getAllDoctorsById);
+router.get("/:nameColumnMap/:id/remote=:type", doctorController.getAllDoctorsById);
 router.delete("/:doctorId", doctorController.deleteDoctor);
 
 // router.get("/:keyMapId&:remote", doctorController.getDoctorsBaseKeyMap);

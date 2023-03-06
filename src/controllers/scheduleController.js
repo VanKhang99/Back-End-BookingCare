@@ -63,7 +63,7 @@ exports.bulkCreateSchedule = async (req, res) => {
 
 exports.handleGetSchedules = async (req, res) => {
   try {
-    const { id, timeStamp, keyMap, timesFetch } = req.params;
+    const { keyMap, id, timeStamp, timesFetch } = req.params;
 
     if (!id || !timeStamp || !keyMap || !timesFetch) {
       return res.status(400).json({
@@ -71,8 +71,8 @@ exports.handleGetSchedules = async (req, res) => {
         message: "Missing parameter to execute request!",
       });
     }
-
-    console.log(timesFetch);
+    // console.log(timeStamp);
+    // console.log(timesFetch);
 
     const schedules = await db.Schedule.findAll({
       where: {

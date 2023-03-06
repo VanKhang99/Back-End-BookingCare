@@ -12,13 +12,33 @@ exports.getAllPackages = async (req, res) => {
         ...(clinicId && { clinicId: clinicId }),
       },
       attributes: {
-        exclude: ["createdAt", "updatedAt", ""],
+        exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId", "packageTypeId"],
       },
       include: [
         {
           model: db.Clinic,
           as: "clinicData",
-          // attributes: ["keyMap", "valueEn", "valueVi"],
+          attributes: ["address", "nameEn", "nameVi"],
+        },
+        {
+          model: db.Package_Type,
+          as: "packageType",
+          attributes: ["id", "nameEn", "nameVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "pricePackage",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "provincePackage",
+          attributes: ["keyMap", "valueEn", "valueVi"],
+        },
+        {
+          model: db.Allcode,
+          as: "paymentPackage",
+          attributes: ["keyMap", "valueEn", "valueVi"],
         },
       ],
       nest: true,

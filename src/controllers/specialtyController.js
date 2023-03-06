@@ -43,7 +43,7 @@ exports.getAllSpecialties = async (req, res) => {
 exports.getSpecialty = async (req, res) => {
   try {
     const specialtyId = +req.params.specialtyId;
-    const specialty = await db.Specialty.fineOne({
+    const specialty = await db.Specialty.findOne({
       where: { id: specialtyId },
     });
 
