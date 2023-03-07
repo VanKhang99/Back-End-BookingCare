@@ -77,6 +77,7 @@ exports.handleCreateBooking = async (req, res) => {
       priceId,
       remote,
     } = req.body;
+    console.log(req.body);
 
     if (!email || !birthday || !timeType || !dateBooked || !priceId || !timeFrame) {
       return res.status(400).json({
@@ -197,7 +198,6 @@ exports.handleCreateBooking = async (req, res) => {
       }
     }
 
-    console.log(clinicName);
     if (booking.dataValues.statusId === "S1") {
       const personNameBook = language === "vi" ? `${lastName} ${firstName}` : `${firstName} ${lastName}`;
       await sendEmail({

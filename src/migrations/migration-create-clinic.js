@@ -38,10 +38,12 @@ module.exports = {
       haveSpecialtyPage: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       popular: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       noteHTML: {
         type: Sequelize.TEXT,

@@ -94,7 +94,7 @@ const sendEmail = async (data, typeEmail = "createBooking") => {
     }
 
     const mailOptions = {
-      from: ` Van Khang <${process.env.EMAIL_FROM}>`, // sender address
+      from: ` BookingCare <${process.env.EMAIL_FROM}>`, // sender address
       to: `${data.email}`, // list of receivers
       subject: subject, // Subject line
       text: htmlToText.convert(markupHTML), // plain text body

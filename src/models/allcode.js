@@ -24,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
 
       // Doctor_Info
       Allcode.hasMany(models.Doctor_Info, {
-        foreignKey: "priceId",
-        as: "priceData",
-      });
-      Allcode.hasMany(models.Doctor_Info, {
         foreignKey: "provinceId",
         as: "provinceData",
       });
@@ -53,10 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       //Package
-      Allcode.hasMany(models.Package, {
-        foreignKey: "priceId",
-        as: "pricePackage",
-      });
+      // Allcode.hasMany(models.Package, {
+      //   foreignKey: "priceId",
+      //   as: "pricePackage",
+      // });
       Allcode.hasMany(models.Package, {
         foreignKey: "provinceId",
         as: "provincePackage",
@@ -112,11 +108,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Allcode",
-      // hooks: {
-      //   beforeCreate: async (allcode) => {
-
-      //   }
-      // }
     }
   );
   return Allcode;

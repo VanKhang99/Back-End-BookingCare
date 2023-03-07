@@ -13,10 +13,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      priceId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+
       provinceId: {
         type: Sequelize.TEXT,
         allowNull: false,
@@ -33,6 +30,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+
+      price: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       addressClinic: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -40,10 +42,12 @@ module.exports = {
       popular: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       remote: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       note: {
         type: Sequelize.STRING,

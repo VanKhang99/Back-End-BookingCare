@@ -30,10 +30,12 @@ module.exports = {
       popular: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       remote: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       descriptionHTML: {
         type: Sequelize.TEXT,

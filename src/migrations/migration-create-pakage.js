@@ -21,10 +21,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
-      priceId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+
       provinceId: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -33,7 +30,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-
+      price: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       nameVi: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -44,6 +44,7 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+
       image: {
         type: Sequelize.STRING,
         allowNull: true,

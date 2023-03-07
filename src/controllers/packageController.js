@@ -12,7 +12,7 @@ exports.getAllPackages = async (req, res) => {
         ...(clinicId && { clinicId: clinicId }),
       },
       attributes: {
-        exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId", "packageTypeId"],
+        exclude: ["createdAt", "updatedAt", "provinceId", "paymentId", "packageTypeId"],
       },
       include: [
         {
@@ -24,11 +24,6 @@ exports.getAllPackages = async (req, res) => {
           model: db.Package_Type,
           as: "packageType",
           attributes: ["id", "nameEn", "nameVi"],
-        },
-        {
-          model: db.Allcode,
-          as: "pricePackage",
-          attributes: ["keyMap", "valueEn", "valueVi"],
         },
         {
           model: db.Allcode,
@@ -75,7 +70,7 @@ exports.getPackage = async (req, res) => {
     const pk = await db.Package.findOne({
       where: { id: packageId },
       attributes: {
-        exclude: ["createdAt", "updatedAt", "priceId", "provinceId", "paymentId", "specialtyId"],
+        exclude: ["createdAt", "updatedAt", "provinceId", "paymentId", "specialtyId"],
       },
       include: [
         {
@@ -87,11 +82,6 @@ exports.getPackage = async (req, res) => {
           model: db.Specialty,
           as: "specialty",
           attributes: ["id", "nameVi", "nameEn"],
-        },
-        {
-          model: db.Allcode,
-          as: "pricePackage",
-          attributes: ["keyMap", "valueEn", "valueVi"],
         },
         {
           model: db.Allcode,

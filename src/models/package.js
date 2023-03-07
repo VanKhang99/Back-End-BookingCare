@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       //ALLCODE
-      Package.belongsTo(models.Allcode, {
-        foreignKey: "priceId",
-        targetKey: "keyMap",
-        as: "pricePackage",
-      });
+      // Package.belongsTo(models.Allcode, {
+      //   foreignKey: "priceId",
+      //   targetKey: "keyMap",
+      //   as: "pricePackage",
+      // });
 
       Package.belongsTo(models.Allcode, {
         foreignKey: "provinceId",
@@ -55,10 +55,10 @@ module.exports = (sequelize, DataTypes) => {
       clinicId: DataTypes.INTEGER,
       specialtyId: DataTypes.INTEGER,
       packageTypeId: DataTypes.INTEGER,
-      priceId: DataTypes.STRING,
       provinceId: DataTypes.STRING,
       paymentId: DataTypes.STRING,
 
+      price: DataTypes.STRING,
       nameVi: DataTypes.STRING,
       nameEn: DataTypes.STRING,
       image: DataTypes.STRING,

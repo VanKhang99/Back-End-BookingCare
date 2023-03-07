@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Doctor_Info.belongsTo(models.Allcode, {
-        foreignKey: "priceId",
-        targetKey: "keyMap",
-        as: "priceData",
-      });
+      // Doctor_Info.belongsTo(models.Allcode, {
+      //   foreignKey: "priceId",
+      //   targetKey: "keyMap",
+      //   as: "priceData",
+      // });
 
       Doctor_Info.belongsTo(models.Allcode, {
         foreignKey: "provinceId",
@@ -58,12 +58,12 @@ module.exports = (sequelize, DataTypes) => {
   Doctor_Info.init(
     {
       doctorId: DataTypes.INTEGER,
-      priceId: DataTypes.STRING,
       provinceId: DataTypes.STRING,
       paymentId: DataTypes.STRING,
       specialtyId: DataTypes.INTEGER,
       clinicId: DataTypes.INTEGER,
 
+      price: DataTypes.STRING,
       addressClinic: DataTypes.STRING,
       popular: DataTypes.BOOLEAN,
       remote: DataTypes.BOOLEAN,
