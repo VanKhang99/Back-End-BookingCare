@@ -8,7 +8,7 @@ exports.getAllPackages = async (req, res) => {
     const specialtyId = +req.params.specialtyId;
     const packages = await db.Package.findAll({
       where: {
-        ...(specialtyId && { specialtyId: specialtyId }),
+        specialtyId: specialtyId ? specialtyId : null,
         ...(clinicId && { clinicId: clinicId }),
       },
       attributes: {
@@ -24,6 +24,11 @@ exports.getAllPackages = async (req, res) => {
           model: db.Package_Type,
           as: "packageType",
           attributes: ["id", "nameEn", "nameVi"],
+        },
+        {
+          model: db.Specialty,
+          as: "specialty",
+          attributes: ["id", "nameVi", "nameEn"],
         },
         {
           model: db.Allcode,
