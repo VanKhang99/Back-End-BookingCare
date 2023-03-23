@@ -33,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
         as: "markdownData",
       });
 
-      //Doctor_Info
-      User.hasOne(models.Doctor_Info, {
+      //Doctor
+      User.hasOne(models.Doctor, {
         foreignKey: "doctorId",
         as: "moreData",
       });

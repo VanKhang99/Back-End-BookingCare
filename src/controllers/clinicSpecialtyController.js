@@ -6,7 +6,7 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
   try {
     const clinicId = +req.params.clinicId;
 
-    const specialties = await db.Clinic_Specialty.findAll({
+    const specialties = await db.ClinicSpecialty.findAll({
       where: { clinicId: +clinicId },
       attributes: ["clinicId", "specialtyId", "address", "image"],
       include: [
@@ -32,7 +32,7 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
       });
     }
 
-    const specialtiesData = await getManyImageFromS3("Clinic_Specialty", specialties);
+    const specialtiesData = await getManyImageFromS3("ClinicSpecialty", specialties);
 
     return res.status(200).json({
       status: "success",
@@ -52,7 +52,7 @@ exports.getAllSpecialtiesByClinicId = async (req, res) => {
 exports.getAllSpecialtiesOfClinic = async (req, res) => {
   try {
     const { clinicId, specialtyId } = req.params;
-    const specialtyClinic = await db.Clinic_Specialty.findOne({
+    const specialtyClinic = await db.ClinicSpecialty.findOne({
       where: {
         clinicId: +clinicId,
         specialtyId: +specialtyId,
@@ -83,7 +83,7 @@ exports.getAllSpecialtiesOfClinic = async (req, res) => {
       });
     }
 
-    const specialtyClinicData = await getOneImageFromS3("Clinic_Specialty", specialtyClinic);
+    const specialtyClinicData = await getOneImageFromS3("ClinicSpecialty", specialtyClinic);
 
     return res.status(200).json({
       status: "success",
@@ -106,7 +106,7 @@ exports.addUpdateSpecialtyClinic = async (req, res) => {
     const { clinicId, specialtyId, action } = data;
 
     if (action === "create") {
-      const infoCreated = await db.Clinic_Specialty.create(
+      const infoCreated = await db.ClinicSpecialty.create(
         {
           ...data,
         },
@@ -121,7 +121,7 @@ exports.addUpdateSpecialtyClinic = async (req, res) => {
       });
     }
 
-    const infoUpdated = await db.Clinic_Specialty.update(
+    const infoUpdated = await db.ClinicSpecialty.update(
       {
         ...data,
         updatedAt: new Date(),
@@ -164,7 +164,7 @@ exports.deleteSpecialtyClinic = async (req, res) => {
       });
     }
 
-    await db.Clinic_Specialty.destroy({
+    await db.ClinicSpecialty.destroy({
       where: {
         clinicId,
         specialtyId,

@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Doctor_Info extends Model {
+  class Doctor extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,53 +9,53 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // Doctor_Info.belongsTo(models.Allcode, {
+      // Doctor.belongsTo(models.Allcode, {
       //   foreignKey: "priceId",
       //   targetKey: "keyMap",
       //   as: "priceData",
       // });
 
-      Doctor_Info.belongsTo(models.Allcode, {
+      Doctor.belongsTo(models.Allcode, {
         foreignKey: "provinceId",
         targetKey: "keyMap",
         as: "provinceData",
       });
 
-      Doctor_Info.belongsTo(models.Allcode, {
+      Doctor.belongsTo(models.Allcode, {
         foreignKey: "paymentId",
         targetKey: "keyMap",
         as: "paymentData",
       });
 
       //USER
-      Doctor_Info.belongsTo(models.User, {
+      Doctor.belongsTo(models.User, {
         foreignKey: "doctorId",
         targetKey: "id",
         as: "moreData",
       });
 
       //CLINIC
-      Doctor_Info.belongsTo(models.Clinic, {
+      Doctor.belongsTo(models.Clinic, {
         foreignKey: "clinicId",
         targetKey: "id",
         as: "clinic",
       });
 
       //SPECIALTY
-      Doctor_Info.belongsTo(models.Specialty, {
+      Doctor.belongsTo(models.Specialty, {
         foreignKey: "specialtyId",
         targetKey: "id",
         as: "specialtyData",
       });
 
       //BOOKING
-      Doctor_Info.hasMany(models.Booking, {
+      Doctor.hasMany(models.Booking, {
         foreignKey: "doctorId",
         as: "remoteDoctor",
       });
     }
   }
-  Doctor_Info.init(
+  Doctor.init(
     {
       doctorId: DataTypes.INTEGER,
       provinceId: DataTypes.STRING,
@@ -76,8 +76,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Doctor_Info",
+      modelName: "Doctor",
     }
   );
-  return Doctor_Info;
+  return Doctor;
 };

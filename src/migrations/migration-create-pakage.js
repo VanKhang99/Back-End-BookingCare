@@ -17,8 +17,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
-      packageTypeId: {
-        type: Sequelize.INTEGER,
+      categoryId: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
 

@@ -22,20 +22,20 @@ module.exports = (sequelize, DataTypes) => {
         as: "timeTypeData",
       });
 
-      // Doctor_Info
-      Allcode.hasMany(models.Doctor_Info, {
+      // Doctor
+      Allcode.hasMany(models.Doctor, {
         foreignKey: "provinceId",
         as: "provinceData",
       });
-      Allcode.hasMany(models.Doctor_Info, {
+      Allcode.hasMany(models.Doctor, {
         foreignKey: "paymentId",
         as: "paymentData",
       });
-      Allcode.hasMany(models.Doctor_Info, {
+      Allcode.hasMany(models.Doctor, {
         foreignKey: "specialtyId",
         as: "specialtyData",
       });
-      Allcode.hasMany(models.Doctor_Info, {
+      Allcode.hasMany(models.Doctor, {
         foreignKey: "clinicId",
         as: "clinicData",
       });
@@ -76,12 +76,12 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       //Clinic - Specialty
-      Allcode.hasMany(models.Clinic_Specialty, {
+      Allcode.hasMany(models.ClinicSpecialty, {
         foreignKey: "specialtyId",
         as: "nameClinic",
       });
 
-      Allcode.hasOne(models.Clinic_Specialty, {
+      Allcode.hasOne(models.ClinicSpecialty, {
         foreignKey: "specialtyId",
         as: "nameSpecialty",
       });

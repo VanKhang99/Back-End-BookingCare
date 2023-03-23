@@ -1,18 +1,27 @@
 const db = require("../models/index");
-const { Buffer } = require("buffer");
 const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
+const { bulkCreatePackageCategories } = require("./packageCategoriesController");
 
 exports.getAllPackages = async (req, res) => {
   try {
     const clinicId = +req.params.clinicId;
     const specialtyId = +req.params.specialtyId;
-    const packages = await db.Package.findAll({
-      where: {
+    const getAll = req.params.getAll;
+    let objectWhere;
+
+    if (getAll === "true") {
+      objectWhere = {};
+    } else {
+      objectWhere = {
         specialtyId: specialtyId ? specialtyId : null,
         ...(clinicId && { clinicId: clinicId }),
-      },
+      };
+    }
+
+    const packages = await db.Package.findAll({
+      where: objectWhere,
       attributes: {
-        exclude: ["createdAt", "updatedAt", "provinceId", "paymentId", "packageTypeId"],
+        exclude: ["createdAt", "updatedAt", "provinceId", "paymentId"],
       },
       include: [
         {
@@ -20,11 +29,11 @@ exports.getAllPackages = async (req, res) => {
           as: "clinicData",
           attributes: ["address", "nameEn", "nameVi"],
         },
-        {
-          model: db.Package_Type,
-          as: "packageType",
-          attributes: ["id", "nameEn", "nameVi"],
-        },
+        // {
+        //   model: db.Category,
+        //   as: "category",
+        //   attributes: ["id", "nameEn", "nameVi"],
+        // },
         {
           model: db.Specialty,
           as: "specialty",
@@ -98,6 +107,11 @@ exports.getPackage = async (req, res) => {
           as: "paymentPackage",
           attributes: ["keyMap", "valueEn", "valueVi"],
         },
+        // {
+        //   model: db.Category,
+        //   through: { attributes: [] },
+        //   // as: "packageCategoryData",
+        // },
       ],
       nest: true,
       raw: true,
@@ -132,12 +146,21 @@ exports.createPackage = async (req, res) => {
     const data = { ...req.body };
 
     if (data.action === "create") {
-      const infoCreated = await db.Package.create(
-        {
+      const infoCreated = (
+        await db.Package.create({
           ...data,
-        },
-        { raw: true }
-      );
+        })
+      ).get({ plain: true });
+
+      // if (infoCreated) {
+      //   console.log("test");
+      //   for (const id of data.categoryIds) {
+      //     await db.PackageCategory.create({
+      //       packageId: +infoCreated.id,
+      //       categoryId: +id,
+      //     });
+      //   }
+      // }
 
       return res.status(201).json({
         status: "success",

@@ -6,7 +6,7 @@ const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 exports.getAllDoctors = async (req, res) => {
   try {
     const { type } = req.params;
-    const doctors = await db.Doctor_Info.findAll({
+    const doctors = await db.Doctor.findAll({
       attributes: ["doctorId", "popular", "remote"],
       include: [
         {
@@ -42,7 +42,7 @@ exports.getAllDoctors = async (req, res) => {
         message: "Something went wrong!",
       });
 
-    let dataDoctors = await getManyImageFromS3("Doctor_Info", doctors);
+    let dataDoctors = await getManyImageFromS3("Doctor", doctors);
 
     if (type === "popular") {
       dataDoctors = dataDoctors.filter((doctor) => doctor.popular);
@@ -93,7 +93,7 @@ exports.getAllDoctorsById = async (req, res) => {
       };
     }
 
-    const doctors = await db.Doctor_Info.findAll({
+    const doctors = await db.Doctor.findAll({
       where: {
         ...objectWhereForQuery,
       },
@@ -150,7 +150,7 @@ exports.getAllDoctorsById = async (req, res) => {
       });
     }
 
-    let dataDoctors = await getManyImageFromS3("Doctor_Info", doctors);
+    let dataDoctors = await getManyImageFromS3("Doctor", doctors);
 
     return res.status(200).json({
       status: "success",
@@ -174,7 +174,7 @@ exports.saveInfoDoctor = async (req, res) => {
     // console.log(doctorId, action);
 
     if (action === "create") {
-      const infoCreated = await db.Doctor_Info.create(
+      const infoCreated = await db.Doctor.create(
         {
           ...req.body,
         },
@@ -189,7 +189,7 @@ exports.saveInfoDoctor = async (req, res) => {
       });
     }
 
-    const infoUpdated = await db.Doctor_Info.update(
+    const infoUpdated = await db.Doctor.update(
       {
         ...req.body,
         updatedAt: new Date(),
@@ -224,7 +224,7 @@ exports.saveInfoDoctor = async (req, res) => {
 exports.getDoctor = async (req, res) => {
   try {
     const doctorId = +req.params.doctorId;
-    const doctor = await db.Doctor_Info.findOne({
+    const doctor = await db.Doctor.findOne({
       where: {
         doctorId,
       },
@@ -276,7 +276,7 @@ exports.getDoctor = async (req, res) => {
 
     console.log(doctorData);
 
-    const doctorData = await getOneImageFromS3("Doctor_Info", doctor);
+    const doctorData = await getOneImageFromS3("Doctor", doctor);
 
     if (!doctorData) {
       return res.status(400).json({
@@ -310,7 +310,7 @@ exports.deleteDoctor = async (req, res) => {
       });
     }
 
-    await db.Doctor_Info.destroy({
+    await db.Doctor.destroy({
       where: { doctorId },
     });
 

@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       //DOCTOR_INFO
-      Booking.belongsTo(models.Doctor_Info, {
+      Booking.belongsTo(models.Doctor, {
         foreignKey: "doctorId",
         targetKey: "doctorId",
         as: "remoteDoctor",

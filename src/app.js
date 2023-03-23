@@ -14,7 +14,7 @@ const scheduleRouter = require("./routes/scheduleRoute");
 const bookingRouter = require("./routes/bookingRoute");
 const specialtyRouter = require("./routes/specialtyRoute");
 const clinicRouter = require("./routes/clinicRoute");
-const packageTypeRouter = require("./routes/packageTypeRoute");
+const categoryRouter = require("./routes/categoryRoute");
 const packageRouter = require("./routes/packageRoute");
 const clinicSpecialtyRouter = require("./routes/clinicSpecialtyRoute");
 const awsS3router = require("./routes/awsS3route");
@@ -54,7 +54,7 @@ app.use("/api/specialties", specialtyRouter);
 app.use("/api/clinics", clinicRouter);
 app.use("/api/clinic/specialties", clinicSpecialtyRouter);
 app.use("/api/packages", packageRouter);
-app.use("/api/packages-type", packageTypeRouter);
+app.use("/api/categories", categoryRouter);
 app.use("/api/awsS3", awsS3router);
 
 module.exports = app;

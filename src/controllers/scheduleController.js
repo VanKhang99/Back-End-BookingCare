@@ -133,9 +133,6 @@ exports.handleDeleteSchedules = async (req, res) => {
       });
     }
 
-    console.log(typeId, id);
-    console.log(schedules);
-
     for (const schedule of schedules) {
       await db.Schedule.destroy({
         where: {

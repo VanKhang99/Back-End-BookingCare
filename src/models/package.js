@@ -41,20 +41,13 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "specialty",
       });
-
-      //PACKAGE-TYPE
-      Package.belongsTo(models.Package_Type, {
-        foreignKey: "packageTypeId",
-        targetKey: "id",
-        as: "packageType",
-      });
     }
   }
   Package.init(
     {
       clinicId: DataTypes.INTEGER,
       specialtyId: DataTypes.INTEGER,
-      packageTypeId: DataTypes.INTEGER,
+      categoryId: DataTypes.STRING,
       provinceId: DataTypes.STRING,
       paymentId: DataTypes.STRING,
 

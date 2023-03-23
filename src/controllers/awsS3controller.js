@@ -31,7 +31,7 @@ exports.getManyImageFromS3 = async (nameDB, data) => {
         item.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
       }
 
-      if (nameDB === "Doctor_Info") {
+      if (nameDB === "Doctor") {
         getObjectParams.Key = item.moreData.image;
         const imageCommand = new GetObjectCommand(getObjectParams);
         item.moreData.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
@@ -43,7 +43,7 @@ exports.getManyImageFromS3 = async (nameDB, data) => {
         item.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
       }
 
-      if (nameDB === "Clinic_Specialty" && item.clinicInfo.image) {
+      if (nameDB === "ClinicSpecialty" && item.clinicInfo.image) {
         getObjectParams.Key = item.clinicInfo.image;
         const logoCommand = new GetObjectCommand(getObjectParams);
         item.clinicInfo.imageUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
@@ -75,7 +75,7 @@ exports.getOneImageFromS3 = async (nameDB, data) => {
       data.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
     }
 
-    if (nameDB === "Doctor_Info") {
+    if (nameDB === "Doctor") {
       getObjectParams.Key = data.moreData.image;
       const imageCommand = new GetObjectCommand(getObjectParams);
       data.moreData.imageUrl = await getSignedUrl(s3, imageCommand, { expiresIn: 600000 });
@@ -87,13 +87,13 @@ exports.getOneImageFromS3 = async (nameDB, data) => {
       data.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
     }
 
-    if (nameDB === "Clinic_Specialty" && data.clinicInfo.logo) {
+    if (nameDB === "ClinicSpecialty" && data.clinicInfo.logo) {
       getObjectParams.Key = data.clinicInfo.logo;
       const logoCommand = new GetObjectCommand(getObjectParams);
       data.clinicInfo.logoUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });
     }
 
-    if (nameDB === "Clinic_Specialty" && data.clinicInfo.image) {
+    if (nameDB === "ClinicSpecialty" && data.clinicInfo.image) {
       getObjectParams.Key = data.clinicInfo.image;
       const logoCommand = new GetObjectCommand(getObjectParams);
       data.clinicInfo.imageUrl = await getSignedUrl(s3, logoCommand, { expiresIn: 600000 });

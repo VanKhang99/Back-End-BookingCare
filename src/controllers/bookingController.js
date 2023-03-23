@@ -318,7 +318,7 @@ exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
         },
 
         {
-          model: db.Doctor_Info,
+          model: db.Doctor,
           as: "remoteDoctor",
           attributes: ["remote"],
         },

@@ -3,72 +3,72 @@ const { Buffer } = require("buffer");
 
 const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
 
-exports.getAllPackagesType = async (req, res) => {
+exports.getAllCategories = async (req, res) => {
   try {
-    const packagesType = await db.Package_Type.findAll();
+    const categories = await db.Category.findAll();
 
-    if (!packagesType.length) {
+    if (!categories.length) {
       return res.status(404).json({
         status: "error",
         message: "Something went wrong",
       });
     }
 
-    const dataPackagesType = await getManyImageFromS3("Package_Type", packagesType);
+    const dataCategories = await getManyImageFromS3("Category", categories);
 
     return res.status(200).json({
       status: "success",
       data: {
-        packages: dataPackagesType,
+        categories,
       },
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Get all packages type error from the server.",
+      message: "Get all categories error from the server.",
     });
   }
 };
 
-exports.getPackageType = async (req, res) => {
+exports.getCategory = async (req, res) => {
   try {
-    const { packageTypeId } = req.params;
+    const { categoryId } = req.params;
 
-    const packagesType = await db.Package_Type.findOne({
-      where: { id: +packageTypeId },
+    const category = await db.Category.findOne({
+      where: { id: +categoryId },
     });
 
-    if (!packagesType) {
+    if (!category) {
       return res.status(404).json({
         status: "error",
         message: "No data found with that ID. Please check your ID and try again!",
       });
     }
 
-    const dataPackagesType = await getOneImageFromS3("Package_Type", packagesType);
+    const dataCategory = await getOneImageFromS3("Category", category);
 
     return res.status(200).json({
       status: "success",
       data: {
-        data: dataPackagesType,
+        data: dataCategory,
       },
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Get package error from the server.",
+      message: "Get category error from the server.",
     });
   }
 };
 
-exports.createUpdatePackageType = async (req, res) => {
+exports.createUpdateCategory = async (req, res) => {
   try {
     const data = { ...req.body };
 
     if (data.action === "create") {
-      const infoCreated = await db.Package_Type.create(
+      const infoCreated = await db.Category.create(
         {
           ...data,
         },
@@ -83,7 +83,7 @@ exports.createUpdatePackageType = async (req, res) => {
       });
     }
 
-    const infoUpdated = await db.Package_Type.update(
+    const infoUpdated = await db.Category.update(
       {
         ...data,
         updatedAt: new Date(),
@@ -110,36 +110,36 @@ exports.createUpdatePackageType = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Create package-type error from the server.",
+      message: "Create - Update category error from the server.",
     });
   }
 };
 
-exports.deletePackageType = async (req, res) => {
+exports.deleteCategory = async (req, res) => {
   try {
-    const { packageTypeId } = req.params;
+    const { categoryId } = req.params;
 
-    if (!packageTypeId)
+    if (!categoryId)
       return res.status(400).json({
         status: "error",
-        message: "Invalid packageTypeID",
+        message: "Invalid categoryId",
       });
 
-    await db.Package_Type.destroy({
+    await db.Category.destroy({
       where: {
-        id: packageTypeId,
+        id: categoryId,
       },
     });
 
     return res.status(204).json({
       status: "success",
-      message: "Package type deleted successfully",
+      message: "Category deleted successfully",
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       status: "error",
-      message: "Delete package-type error from the server.",
+      message: "Delete category error from the server.",
     });
   }
 };
