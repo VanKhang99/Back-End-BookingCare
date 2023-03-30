@@ -91,10 +91,22 @@ const sendEmail = async (data, typeEmail = "createBooking") => {
       });
 
       pdf = await convertHTMLtoPDF(resultExaminationHTML, pdf);
+    } else if (typeEmail === "confirmAccount") {
+      pathEmailFile =
+        data.language === "vi"
+          ? `${__dirname}/../views/emails/emailConfirmAccountVi.ejs`
+          : `${__dirname}/../views/emails/emailConfirmAccountEn.ejs`;
+
+      markupHTML = await ejs.renderFile(pathEmailFile, {
+        confirmCode: data?.confirmCode,
+      });
+
+      subject =
+        data.language === "vi" ? "Xác minh tài khoản BookingCare" : "BookingCare account verification";
     }
 
     const mailOptions = {
-      from: ` BookingCare <${process.env.EMAIL_FROM}>`, // sender address
+      from: `BookingCare <noreply@email.bookingcare.com>`, // sender address
       to: `${data.email}`, // list of receivers
       subject: subject, // Subject line
       text: htmlToText.convert(markupHTML), // plain text body

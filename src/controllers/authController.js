@@ -2,6 +2,7 @@ const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const db = require("../models/index");
 const userService = require("../services/userService");
+const sendEmail = require("../utils/email");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -16,7 +17,6 @@ const createSendToken = (user, statusCode, req, res) => {
   res.cookie("jwt", token, {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    // secure: req.secure || req.headers["x-forwarded-proto"] === "https",,
   });
 
   // Remove password from output
@@ -29,6 +29,110 @@ const createSendToken = (user, statusCode, req, res) => {
       user: user ? user : {},
     },
   });
+};
+
+exports.sendCode = async (req, res) => {
+  const { email, language } = req.body;
+  const confirmCode = (Math.floor(Math.random() * 9000000) + 1000000).toString();
+  try {
+    await sendEmail(
+      {
+        email,
+        language,
+        confirmCode,
+      },
+      "confirmAccount"
+    );
+
+    const user = await db.User.findOne({ where: { email } });
+    if (user) {
+      await db.User.update(
+        {
+          confirmCode,
+          isConfirmed: false,
+          updatedAt: new Date(),
+        },
+        {
+          where: { email },
+        }
+      );
+    } else {
+      await db.User.upsert({ email, confirmCode, isConfirmed: false });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      code: confirmCode,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Generate confirm code failed from the server",
+    });
+  }
+};
+
+exports.verifyCode = async (req, res) => {
+  const { email, confirmCode } = req.body;
+  try {
+    const user = await db.User.findOne({ where: { email, confirmCode } });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid email and confirm code",
+      });
+    }
+
+    await db.User.update(
+      {
+        isConfirmed: true,
+      },
+      {
+        where: { email },
+      }
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: "Code is verified",
+    });
+  } catch (error) {}
+};
+
+exports.signUp = async (req, res) => {
+  try {
+    const checkEmail = await userService.checkEmailExisted(req.body.email);
+
+    if (checkEmail) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email already in use. Please try another one!",
+      });
+    }
+
+    const passwordHashedFromBcrypt = await userService.hashUserPassword(req.body.password);
+
+    const { isNewUser } = req.body;
+
+    const newUser = await db.User.create(
+      {
+        ...req.body,
+        password: passwordHashedFromBcrypt,
+        roleId: isNewUser ? "R7" : null,
+      },
+      { raw: true }
+    );
+
+    createSendToken(newUser, 201, req, res);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Sign-up user failed from the server",
+    });
+  }
 };
 
 exports.login = async (req, res) => {

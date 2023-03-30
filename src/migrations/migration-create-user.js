@@ -50,6 +50,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      confirmCode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      isConfirmed: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
