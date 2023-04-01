@@ -65,11 +65,13 @@ module.exports = (sequelize, DataTypes) => {
       positionId: DataTypes.STRING,
       confirmCode: DataTypes.STRING,
       isConfirmed: DataTypes.BOOLEAN,
+      passwordChangedAt: DataTypes.DATEONLY,
     },
     {
       sequelize,
       modelName: "User",
     }
   );
+
   return User;
 };

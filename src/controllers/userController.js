@@ -68,12 +68,22 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 exports.getUser = async (req, res) => {
   try {
     const userId = +req.params.id;
     const user = await db.User.findOne({
       where: { id: userId },
     });
+
+    user.password = undefined;
+    user.passwordChangedAt = undefined;
+    user.confirmCode = undefined;
+    user.isConfirmed = undefined;
 
     if (!user) {
       return res.status(404).json({
@@ -83,7 +93,6 @@ exports.getUser = async (req, res) => {
     }
 
     const userData = await getOneImageFromS3("User", user);
-    console.log(userData);
 
     return res.status(200).json({
       status: "success",

@@ -274,8 +274,6 @@ exports.getDoctor = async (req, res) => {
       raw: true,
     });
 
-    console.log(doctorData);
-
     const doctorData = await getOneImageFromS3("Doctor", doctor);
 
     if (!doctorData) {

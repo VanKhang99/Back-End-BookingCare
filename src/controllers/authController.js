@@ -1,6 +1,7 @@
 const { promisify } = require("util");
-const jwt = require("jsonwebtoken");
+const { User } = require("../models/index");
 const db = require("../models/index");
+const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const sendEmail = require("../utils/email");
 
@@ -35,6 +36,31 @@ exports.sendCode = async (req, res) => {
   const { email, language } = req.body;
   const confirmCode = (Math.floor(Math.random() * 9000000) + 1000000).toString();
   try {
+    const user = await User.findOne({ where: { email } });
+
+    if (user && user.isConfirmed) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email is already used to register an account, please use another email!",
+      });
+    } else if (user && !user.isConfirmed) {
+      await User.update(
+        {
+          confirmCode,
+          isConfirmed: false,
+        },
+        {
+          where: { email },
+        }
+      );
+    } else {
+      await User.create({
+        email,
+        confirmCode,
+        isConfirmed: false,
+      });
+    }
+
     await sendEmail(
       {
         email,
@@ -43,22 +69,6 @@ exports.sendCode = async (req, res) => {
       },
       "confirmAccount"
     );
-
-    const user = await db.User.findOne({ where: { email } });
-    if (user) {
-      await db.User.update(
-        {
-          confirmCode,
-          isConfirmed: false,
-          updatedAt: new Date(),
-        },
-        {
-          where: { email },
-        }
-      );
-    } else {
-      await db.User.upsert({ email, confirmCode, isConfirmed: false });
-    }
 
     return res.status(200).json({
       status: "success",
@@ -76,7 +86,7 @@ exports.sendCode = async (req, res) => {
 exports.verifyCode = async (req, res) => {
   const { email, confirmCode } = req.body;
   try {
-    const user = await db.User.findOne({ where: { email, confirmCode } });
+    const user = await User.findOne({ where: { email, confirmCode } });
 
     if (!user) {
       return res.status(404).json({
@@ -85,7 +95,7 @@ exports.verifyCode = async (req, res) => {
       });
     }
 
-    await db.User.update(
+    await User.update(
       {
         isConfirmed: true,
       },
@@ -103,27 +113,25 @@ exports.verifyCode = async (req, res) => {
 
 exports.signUp = async (req, res) => {
   try {
-    const checkEmail = await userService.checkEmailExisted(req.body.email);
+    const dataFromClient = req.body;
+    const { email, password, isNewUser } = dataFromClient;
+    const passwordHashedFromBcrypt = await userService.hashUserPassword(password);
 
-    if (checkEmail) {
-      return res.status(400).json({
-        status: "error",
-        message: "Email already in use. Please try another one!",
-      });
-    }
-
-    const passwordHashedFromBcrypt = await userService.hashUserPassword(req.body.password);
-
-    const { isNewUser } = req.body;
-
-    const newUser = await db.User.create(
+    await User.update(
       {
         ...req.body,
         password: passwordHashedFromBcrypt,
         roleId: isNewUser ? "R7" : null,
       },
-      { raw: true }
+      {
+        where: { email },
+      }
     );
+
+    const newUser = await User.findOne({
+      where: { email },
+      raw: true,
+    });
 
     createSendToken(newUser, 201, req, res);
   } catch (error) {
@@ -147,7 +155,7 @@ exports.login = async (req, res) => {
     }
 
     // 1) Find user by email input
-    const user = await db.User.findOne({
+    const user = await User.findOne({
       // attributes: ["email", "roleId", "password", "firstName", "lastName"],
       where: { email },
       raw: true,
@@ -204,10 +212,24 @@ exports.protect = async (req, res, next) => {
 
     // 2) Validate token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    // console.log(decoded);
 
     // 3) Check user is still exists based on token
-    const currentUser = await db.User.findOne({ where: { id: decoded.id } });
+    const currentUser = await User.findOne({ where: { id: decoded.id } });
+
+    const changePasswordAfter = (JWTTimestamp) => {
+      if (currentUser.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        return JWTTimestamp < changedTimestamp;
+      }
+
+      // FALSE mean password has not been changed before the token is issued
+      return false;
+    };
+
+    if (changePasswordAfter(decoded.iat)) {
+      return next(new AppError("User recently changed password! Please log in again", 401));
+    }
 
     req.user = currentUser;
     next();
@@ -223,7 +245,7 @@ exports.isLoggedIn = async function (req, res, next) {
       const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
       // 2) Check user is still exists based on token
-      const currentUser = await db.User.findOne({ where: { id: decoded.id } });
+      const currentUser = await User.findOne({ where: { id: decoded.id } });
 
       if (!currentUser) {
         return next();
