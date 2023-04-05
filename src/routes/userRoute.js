@@ -9,6 +9,7 @@ router.post("/verify-code", authController.verifyCode);
 router.post("/signup", authController.signUp);
 
 router.post("/login", authController.login);
+router.post("/social-login", authController.socialLogin);
 router.get("/logout", authController.logout);
 router.get("/profile", authController.protect, userController.getMe, userController.getUser);
 

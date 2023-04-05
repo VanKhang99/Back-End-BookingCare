@@ -4,6 +4,8 @@ const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const sendEmail = require("../utils/email");
+const { getOneImageFromS3 } = require("./awsS3controller");
+const { filterColumnUser } = require("../utils/helpers");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -38,12 +40,12 @@ exports.sendCode = async (req, res) => {
   try {
     const user = await User.findOne({ where: { email } });
 
-    if (user && user.isConfirmed) {
+    if (user && user.isConfirmed && !user.googleId && !user.facebookId) {
       return res.status(400).json({
         status: "error",
         message: "Email is already used to register an account, please use another email!",
       });
-    } else if (user && !user.isConfirmed) {
+    } else if (user && !user.isConfirmed && !user.googleId && !user.facebookId) {
       await User.update(
         {
           confirmCode,
@@ -161,6 +163,8 @@ exports.login = async (req, res) => {
       raw: true,
     });
 
+    const userData = await getOneImageFromS3("User", user);
+
     // 2) If have email and password, check user and password valid in DB
     if (!user || !(await userService.checkPassword(password, user.password))) {
       return res.status(400).json({
@@ -170,7 +174,7 @@ exports.login = async (req, res) => {
     }
 
     // 3) If everything ok , response token for client
-    createSendToken(user, 200, req, res);
+    createSendToken(userData, 200, req, res);
   } catch (error) {
     console.log(error);
   }
@@ -180,7 +184,7 @@ exports.logout = async (req, res) => {
   try {
     const cookieOptions = {
       expires: new Date(Date.now() + 10 * 1000),
-      httpOnly: true,
+      // httpOnly: true,
     };
 
     res.cookie("jwt", "loggedOut", cookieOptions);
@@ -189,6 +193,76 @@ exports.logout = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+exports.socialLogin = async (req, res) => {
+  try {
+    const data = req.body;
+    const { loginBy } = data;
+
+    let checkUserEmail = await db.User.findOne({
+      where: { email: data.email },
+    });
+
+    if (!checkUserEmail || !Object.keys(checkUserEmail).length) {
+      let user = await db.User.create({
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        roleId: "R7",
+        [`${loginBy}Flag`]: true,
+      });
+
+      user = filterColumnUser(user);
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          user: { ...user, imageUrl: data.imageUrl },
+        },
+      });
+    }
+
+    if (checkUserEmail && loginBy) {
+      if (!checkUserEmail[`${loginBy}Flag`]) {
+        await db.User.update(
+          {
+            [`${loginBy}Flag`]: true,
+          },
+          {
+            where: { email: data.email },
+          }
+        );
+
+        let userUpdated = await db.User.findOne({
+          where: { email: data.email },
+        });
+
+        userUpdated = filterColumnUser(userUpdated);
+
+        return res.status(200).json({
+          status: "success",
+          data: {
+            user: { ...userUpdated, imageUrl: data.imageUrl },
+          },
+        });
+      }
+
+      checkUserEmail = filterColumnUser(checkUserEmail);
+      return res.status(200).json({
+        status: "success",
+        data: {
+          user: { ...checkUserEmail, imageUrl: data.imageUrl },
+        },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Log-in by Google, Facebook failed from server",
+    });
   }
 };
 

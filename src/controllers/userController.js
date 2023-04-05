@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const userService = require("../services/userService");
 const { Buffer } = require("buffer");
 const { getImagesFromS3ForUsers, getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
+const { filterColumnUser } = require("../utils/helpers");
 
 const roleToFilter = (roleString) => {
   let roleIdToMap;
@@ -76,14 +77,11 @@ exports.getMe = (req, res, next) => {
 exports.getUser = async (req, res) => {
   try {
     const userId = +req.params.id;
-    const user = await db.User.findOne({
+    let user = await db.User.findOne({
       where: { id: userId },
     });
 
-    user.password = undefined;
-    user.passwordChangedAt = undefined;
-    user.confirmCode = undefined;
-    user.isConfirmed = undefined;
+    user = filterColumnUser(user);
 
     if (!user) {
       return res.status(404).json({

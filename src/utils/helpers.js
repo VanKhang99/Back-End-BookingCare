@@ -14,3 +14,27 @@ exports.checkInfo = (data, propsArrInfo) => {
 
   return isValid;
 };
+
+exports.filterColumnUser = (dataUser) => {
+  const arrayColumns = [
+    "password",
+    "passwordChangedAt",
+    "confirmCode",
+    "isConfirmed",
+    "phoneNumber",
+    "createdAt",
+    "updatedAt",
+    "googleFlag",
+    "facebookFlag",
+  ];
+
+  for (const prop in dataUser) {
+    if (arrayColumns.includes(prop)) {
+      dataUser[prop] = undefined;
+    } else {
+      continue;
+    }
+  }
+
+  return dataUser;
+};

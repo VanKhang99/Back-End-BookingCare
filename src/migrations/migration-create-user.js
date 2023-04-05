@@ -12,7 +12,7 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
+        unique: false,
       },
       password: {
         type: Sequelize.STRING,
@@ -62,6 +62,14 @@ module.exports = {
       passwordChangedAt: {
         type: Sequelize.DATEONLY,
         allowNull: true,
+      },
+      googleFlag: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      facebookFlag: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
