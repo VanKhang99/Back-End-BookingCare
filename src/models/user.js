@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
       positionId: DataTypes.STRING,
       confirmCode: DataTypes.STRING,
       isConfirmed: DataTypes.BOOLEAN,
-      passwordChangedAt: DataTypes.DATEONLY,
+      passwordChangedAt: DataTypes.STRING,
       googleFlag: DataTypes.BOOLEAN,
       facebookFlag: DataTypes.BOOLEAN,
     },

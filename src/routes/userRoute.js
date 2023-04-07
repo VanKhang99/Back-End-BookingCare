@@ -12,6 +12,8 @@ router.post("/login", authController.login);
 router.post("/social-login", authController.socialLogin);
 router.get("/logout", authController.logout);
 router.get("/profile", authController.protect, userController.getMe, userController.getUser);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password", authController.resetPassword);
 
 router.route("/").get(userController.getAllUsers).post(userController.createUser);
 

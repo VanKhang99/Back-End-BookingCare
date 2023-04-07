@@ -103,6 +103,44 @@ const sendEmail = async (data, typeEmail = "createBooking") => {
 
       subject =
         data.language === "vi" ? "Xác minh tài khoản BookingCare" : "BookingCare account verification";
+    } else if (typeEmail === "forgotPassword") {
+      pathEmailFile =
+        data.language === "vi"
+          ? `${__dirname}/../views/emails/emailForgotPasswordVi.ejs`
+          : `${__dirname}/../views/emails/emailForgotPasswordEn.ejs`;
+
+      markupHTML = await ejs.renderFile(pathEmailFile, {
+        confirmCode: data?.confirmCode,
+      });
+
+      subject =
+        data.language === "vi"
+          ? "Yêu cầu khôi phục mật khẩu BookingCare"
+          : "Request to reset BookingCare password";
+    } else if (typeEmail === "passwordChanged") {
+      pathEmailFile =
+        data.language === "vi"
+          ? `${__dirname}/../views/emails/emailChangePasswordSuccessVi.ejs`
+          : `${__dirname}/../views/emails/emailChangePasswordSuccessEn.ejs`;
+
+      const currentDate = new Date();
+      const formatDate = currentDate.getDate() < 10 ? `0${currentDate.getDate()}` : currentDate.getDate();
+      const formatMonth =
+        currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
+      const formatHour = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+      const timePasswordChanged = `${formatDate} - ${formatMonth} - ${currentDate.getFullYear()} ${
+        data.language === "vi" ? "lúc" : "at"
+      } ${formatHour} (UTC/GMT +7 hours)`;
+
+      markupHTML = await ejs.renderFile(pathEmailFile, {
+        timePasswordChanged,
+      });
+
+      subject =
+        data.language === "vi"
+          ? "Mật khẩu BookingCare đã được thay đổi"
+          : "BookingCare password has been changed";
     }
 
     const mailOptions = {

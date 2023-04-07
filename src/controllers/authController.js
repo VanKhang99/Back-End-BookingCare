@@ -290,6 +290,7 @@ exports.protect = async (req, res, next) => {
     // 3) Check user is still exists based on token
     const currentUser = await User.findOne({ where: { id: decoded.id } });
 
+    // 4) Check if user changed password after the token was issued
     const changePasswordAfter = (JWTTimestamp) => {
       if (currentUser.passwordChangedAt) {
         const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
@@ -332,15 +333,108 @@ exports.isLoggedIn = async function (req, res, next) {
   }
 };
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.roleId)) {
-      return res.status(403).json({
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email, language } = req.body;
+
+    // 1) Get user based POSTed email;
+    const user = await db.User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
         status: "error",
-        message: "You do not have permission to perform this action",
+        message: "There is no user with this email address",
       });
     }
 
-    next();
-  };
+    // 2) Generate the random confirmCode => update confirmCode
+    const confirmCode = (Math.floor(Math.random() * 9000000) + 1000000).toString();
+    await db.User.update(
+      {
+        confirmCode,
+      },
+      {
+        where: { email },
+      }
+    );
+
+    // 3) Send email
+    await sendEmail(
+      {
+        email,
+        language,
+        confirmCode,
+      },
+      "forgotPassword"
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "Confirm code sent to email!",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "API forgot password failed from server",
+    });
+  }
 };
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, confirmCode, password, language } = req.body;
+
+    // Hashed password and Update passwordChangedAt column
+    const passwordHashedFromBcrypt = await userService.hashUserPassword(password);
+    await db.User.update(
+      {
+        password: passwordHashedFromBcrypt,
+        passwordChangedAt: Date.now() - 1000,
+      },
+      {
+        where: { email, confirmCode },
+      }
+    );
+
+    let user = await db.User.findOne({
+      where: { email, confirmCode },
+    });
+
+    user = filterColumnUser(user);
+
+    // Send email
+    await sendEmail(
+      {
+        email,
+        language,
+      },
+      "passwordChanged"
+    );
+
+    // Send token for client
+    createSendToken(user, 200, req, res);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "API reset password failed from server",
+    });
+  }
+};
+
+// exports.restrictTo = (...roles) => {
+//   return (req, res, next) => {
+//     if (!roles.includes(req.user.roleId)) {
+//       return res.status(403).json({
+//         status: "error",
+//         message: "You do not have permission to perform this action",
+//       });
+//     }
+
+//     next();
+
+//   };
+// };

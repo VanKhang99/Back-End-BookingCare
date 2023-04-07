@@ -60,7 +60,7 @@ module.exports = {
         allowNull: true,
       },
       passwordChangedAt: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       googleFlag: {
