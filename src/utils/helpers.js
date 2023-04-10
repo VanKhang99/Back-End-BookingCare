@@ -21,7 +21,6 @@ exports.filterColumnUser = (dataUser) => {
     "passwordChangedAt",
     "confirmCode",
     "isConfirmed",
-    "phoneNumber",
     "createdAt",
     "updatedAt",
     "googleFlag",

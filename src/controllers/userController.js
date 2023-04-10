@@ -157,9 +157,17 @@ exports.updateUser = async (req, res) => {
       });
     }
 
+    let userUpdated = await db.User.findOne({
+      where: { id },
+    });
+
+    userUpdated = filterColumnUser(userUpdated);
+
     return res.status(200).json({
       status: "success",
-      message: "Update successful!",
+      data: {
+        user: userUpdated,
+      },
     });
   } catch (error) {
     console.log(error);

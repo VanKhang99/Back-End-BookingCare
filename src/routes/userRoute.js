@@ -15,6 +15,10 @@ router.get("/profile", authController.protect, userController.getMe, userControl
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
 
+router.use(authController.protect);
+
+router.patch("/update-password", authController.updatePassword);
+
 router.route("/").get(userController.getAllUsers).post(userController.createUser);
 
 router

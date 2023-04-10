@@ -77,7 +77,6 @@ exports.handleCreateBooking = async (req, res) => {
       priceId,
       remote,
     } = req.body;
-    console.log(req.body);
 
     if (!email || !birthday || !timeType || !dateBooked || !priceId || !timeFrame) {
       return res.status(400).json({

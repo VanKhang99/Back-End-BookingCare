@@ -13,10 +13,10 @@ const hashUserPassword = async (password) => {
   });
 };
 
-const checkPassword = (passwordDB, passwordInput) => {
+const checkPassword = (passwordInput, passwordDB) => {
   return new Promise(async (resolve, reject) => {
     try {
-      resolve(await bcrypt.compare(passwordDB, passwordInput));
+      resolve(await bcrypt.compare(passwordInput, passwordDB));
     } catch (error) {
       reject(error);
     }

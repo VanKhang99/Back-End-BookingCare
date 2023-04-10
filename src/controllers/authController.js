@@ -2,6 +2,8 @@ const { promisify } = require("util");
 const { User } = require("../models/index");
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 const userService = require("../services/userService");
 const sendEmail = require("../utils/email");
 const { getOneImageFromS3 } = require("./awsS3controller");
@@ -291,19 +293,26 @@ exports.protect = async (req, res, next) => {
     const currentUser = await User.findOne({ where: { id: decoded.id } });
 
     // 4) Check if user changed password after the token was issued
+    // Check password is changed after JWT created
+    /// TH someone get JWT => user have to change password
+    //// => previous token is no longer valid this time => must to re-login
+    ///// => to create new token
     const changePasswordAfter = (JWTTimestamp) => {
       if (currentUser.passwordChangedAt) {
-        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        const changedTimestamp = parseInt(+currentUser.passwordChangedAt / 1000, 10);
 
         return JWTTimestamp < changedTimestamp;
       }
 
-      // FALSE mean password has not been changed before the token is issued
+      // return false => password is not changed after JWT created
       return false;
     };
 
     if (changePasswordAfter(decoded.iat)) {
-      return next(new AppError("User recently changed password! Please log in again", 401));
+      return res.status(401).json({
+        status: "error",
+        message: "You recently changed password! Please log in again",
+      });
     }
 
     req.user = currentUser;
@@ -421,6 +430,63 @@ exports.resetPassword = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "API reset password failed from server",
+    });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // 1) Get user from table by email;
+    const user = await db.User.findOne({
+      where: { email: req.user.email },
+    });
+
+    // 2) Check if password current is correct
+    if (!Object.keys(user).length || !(await bcrypt.compare(data.currentPassword, req.user.password))) {
+      return res.status(401).json({
+        status: "error",
+        message:
+          data.language === "vi"
+            ? "Mật khẩu hiện tại của bạn không đúng. Vui lòng kiểm tra lại!"
+            : "Your current password is wrong. Please check again",
+      });
+    }
+
+    if (data.newPassword !== data.confirmNewPassword) {
+      return res.status(401).json({
+        status: "error",
+        message:
+          data.language === "vi"
+            ? "Mật khẩu mới không giống nhau. Vui lòng kiểm tra lại!"
+            : "The new password is not the same. Please check again!",
+      });
+    }
+
+    // 3) Updated new password and field passwordChangedAt
+    const hashNewPassword = await userService.hashUserPassword(data.newPassword);
+    await db.User.update(
+      {
+        password: hashNewPassword,
+        passwordChangedAt: Date.now() - 1000,
+      },
+      {
+        where: { email: req.user.email },
+      }
+    );
+
+    const userAfterUpdated = await db.User.findOne({
+      where: { email: req.user.email },
+    });
+
+    // 4) Re-Log the user in, send JWT
+    createSendToken(userAfterUpdated, 201, req, res);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "API update my password failed from server",
     });
   }
 };
