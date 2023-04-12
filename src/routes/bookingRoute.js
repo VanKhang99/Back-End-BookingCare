@@ -1,13 +1,17 @@
 const express = require("express");
 const bookingController = require("../controllers/bookingController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-router.post("/", bookingController.handleCreateBooking);
+router.use(authController.protect);
 
-router.get("/all-patients/:doctorId/:dateBooked", bookingController.handleGetAllPatientsBookingDoctor);
+router.post("/", bookingController.createBooking);
 
-router.patch("/verify-booking/:token&:id&:confirmPackage?", bookingController.handleVerifyBooking);
-router.patch("/confirm-exam-complete/:token&:patientId", bookingController.handleConfirmExamComplete);
+router.get("/all-patients/:doctorId/:dateBooked", bookingController.getAllPatientsBookingDoctor);
+
+router.patch("/verify-booking/:token&:id&:confirmPackage?", bookingController.verifyBooking);
+router.patch("/confirm-exam-complete/:token&:patientId", bookingController.confirmExamComplete);
+router.get("/history-booked/:patientId", bookingController.getAllHistoryBookedById);
 
 module.exports = router;

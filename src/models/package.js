@@ -41,6 +41,12 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "specialty",
       });
+
+      //BOOKING
+      Package.hasMany(models.Booking, {
+        foreignKey: "packageId",
+        as: "packageData",
+      });
     }
   }
   Package.init(

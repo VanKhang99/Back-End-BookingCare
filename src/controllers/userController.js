@@ -159,9 +159,26 @@ exports.updateUser = async (req, res) => {
 
     let userUpdated = await db.User.findOne({
       where: { id },
+      include: [
+        {
+          model: db.Allcode,
+          as: "roleData",
+          attributes: ["valueVi", "valueEn"],
+        },
+        {
+          model: db.Allcode,
+          as: "positionData",
+          attributes: ["valueVi", "valueEn"],
+        },
+      ],
+      nest: true,
+      raw: true,
     });
 
     userUpdated = filterColumnUser(userUpdated);
+    if (userUpdated.image) {
+      userUpdated = await getOneImageFromS3("User", userUpdated);
+    }
 
     return res.status(200).json({
       status: "success",
@@ -199,40 +216,3 @@ exports.deleteUser = async (req, res) => {
     console.log(error);
   }
 };
-
-// exports.handleGetAllUsersByRole = async (req, res) => {
-//   try {
-//     const { role } = req.params;
-//     const roleIdToMap = roleToFilter(role);
-
-//     const users = await db.User.findAll({
-//       where: { ...(roleIdToMap !== "ALL" && { roleId: roleIdToMap }) },
-//       attributes: {
-//         exclude: ["password", "createdAt", "updatedAt"],
-//       },
-//       raw: true,
-//     });
-
-//     if (users.length > 0) {
-//       users.forEach((user) => {
-//         if (user.roleId !== "R7") {
-//           user.image = new Buffer.from(user.image, "base64").toString("binary");
-//         }
-//       });
-
-//       return res.status(200).json({
-//         status: "success",
-//         data: {
-//           results: users.length,
-//           data: users,
-//         },
-//       });
-//     }
-//   } catch (error) {
-//     console.log("Get all users by role error!", error);
-//     return res.status(500).json({
-//       status: "error",
-//       message: "Error from the server.",
-//     });
-//   }
-// };

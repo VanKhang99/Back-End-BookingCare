@@ -36,8 +36,6 @@ const quantityBooked = async (id, timeType, idBookingFor) => {
     raw: true,
   });
 
-  console.log(dataHourBooked);
-
   return {
     data: dataHourBooked,
     result: dataHourBooked.currentNumber < dataHourBooked.maxNumber,
@@ -54,7 +52,7 @@ const statusExamPast = async (patientId) => {
   return checkStatusId;
 };
 
-exports.handleCreateBooking = async (req, res) => {
+exports.createBooking = async (req, res) => {
   try {
     const {
       email,
@@ -77,6 +75,8 @@ exports.handleCreateBooking = async (req, res) => {
       priceId,
       remote,
     } = req.body;
+
+    console.log(email);
 
     if (!email || !birthday || !timeType || !dateBooked || !priceId || !timeFrame) {
       return res.status(400).json({
@@ -127,6 +127,7 @@ exports.handleCreateBooking = async (req, res) => {
             reason,
             token,
             priceId,
+            bookingFor: `${lastName} ${firstName}`,
           },
           { raw: true }
         );
@@ -191,6 +192,7 @@ exports.handleCreateBooking = async (req, res) => {
             reason,
             token,
             priceId,
+            bookingFor: `${lastName} ${firstName}`,
           },
           { raw: true }
         );
@@ -227,7 +229,7 @@ exports.handleCreateBooking = async (req, res) => {
   }
 };
 
-exports.handleVerifyBooking = async (req, res) => {
+exports.verifyBooking = async (req, res) => {
   try {
     const { token, id, confirmPackage } = req.params;
 
@@ -272,11 +274,9 @@ exports.handleVerifyBooking = async (req, res) => {
   }
 };
 
-exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
+exports.getAllPatientsBookingDoctor = async (req, res) => {
   try {
     const { doctorId, dateBooked } = req.params;
-    console.log(dateBooked);
-    console.log(doctorId);
 
     const patients = await db.Booking.findAll({
       where: { doctorId: +doctorId, statusId: "S2", dateBooked },
@@ -349,7 +349,77 @@ exports.handleGetAllPatientsBookingDoctor = async (req, res) => {
   }
 };
 
-exports.handleConfirmExamComplete = async (req, res) => {
+exports.getAllHistoryBookedById = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    console.log(patientId);
+    const listBooked = await db.Booking.findAll({
+      where: { patientId: +patientId },
+      include: [
+        {
+          model: db.Allcode,
+          as: "timeFrameData",
+          attributes: ["valueVi", "valueEn"],
+        },
+
+        {
+          model: db.Package,
+          as: "packageData",
+          attributes: ["nameVi", "nameEn", "clinicId"],
+          include: [
+            {
+              model: db.Clinic,
+              as: "clinicData",
+              attributes: ["nameVi", "nameEn"],
+            },
+          ],
+        },
+
+        {
+          model: db.Doctor,
+          as: "doctorData",
+          attributes: ["doctorId", "clinicId"],
+          include: [
+            {
+              model: db.User,
+              as: "moreData",
+              attributes: ["firstName", "lastName"],
+            },
+            {
+              model: db.Clinic,
+              as: "clinic",
+              attributes: ["nameVi", "nameEn"],
+            },
+          ],
+        },
+      ],
+      nest: true,
+      raw: true,
+    });
+
+    if (!listBooked.length) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invalid patientId",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        list: listBooked,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "getAllBookedHistoryById API error from the server.",
+    });
+  }
+};
+
+exports.confirmExamComplete = async (req, res) => {
   try {
     const { token, patientId } = req.params;
 

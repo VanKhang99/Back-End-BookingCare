@@ -25,6 +25,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      bookingFor: {
+        type: Sequelize.STRING,
+      },
       birthday: {
         type: Sequelize.DATEONLY,
       },

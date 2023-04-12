@@ -162,6 +162,19 @@ exports.login = async (req, res) => {
     const user = await User.findOne({
       // attributes: ["email", "roleId", "password", "firstName", "lastName"],
       where: { email },
+      include: [
+        {
+          model: db.Allcode,
+          as: "roleData",
+          attributes: ["valueVi", "valueEn"],
+        },
+        {
+          model: db.Allcode,
+          as: "positionData",
+          attributes: ["valueVi", "valueEn"],
+        },
+      ],
+      nest: true,
       raw: true,
     });
 

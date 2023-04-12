@@ -35,11 +35,24 @@ module.exports = (sequelize, DataTypes) => {
         as: "bookingPrice",
       });
 
-      //DOCTOR_INFO
+      //DOCTORS
       Booking.belongsTo(models.Doctor, {
         foreignKey: "doctorId",
         targetKey: "doctorId",
         as: "remoteDoctor",
+      });
+
+      Booking.belongsTo(models.Doctor, {
+        foreignKey: "doctorId",
+        targetKey: "doctorId",
+        as: "doctorData",
+      });
+
+      //PACKAGE
+      Booking.belongsTo(models.Package, {
+        foreignKey: "packageId",
+        targetKey: "id",
+        as: "packageData",
       });
     }
   }
@@ -50,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       patientId: DataTypes.INTEGER,
       packageId: DataTypes.INTEGER,
       priceId: DataTypes.STRING,
+      bookingFor: DataTypes.STRING,
       birthday: DataTypes.DATEONLY,
       timeType: DataTypes.STRING,
       dateBooked: DataTypes.DATEONLY,
