@@ -9,18 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // Category.hasMany(models.Package, {
-      //   foreignKey: "packageTypeId",
-      //   as: "category",
-      // });
-      // Category.belongsToMany(models.Package, {
-      //   through: models.PackageCategory,
-      //   foreignKey: "categoryId",
-      // });
-      // Category.hasMany(models.PackageCategory, {
-      //   foreignKey: "categoryId",
-      //   as: "packageCategory",
-      // });
     }
   }
   Category.init(

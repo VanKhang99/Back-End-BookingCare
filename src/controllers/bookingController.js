@@ -352,7 +352,6 @@ exports.getAllPatientsBookingDoctor = async (req, res) => {
 exports.getAllHistoryBookedById = async (req, res) => {
   try {
     const { patientId } = req.params;
-    console.log(patientId);
     const listBooked = await db.Booking.findAll({
       where: { patientId: +patientId },
       include: [

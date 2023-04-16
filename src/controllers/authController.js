@@ -230,13 +230,7 @@ exports.socialLogin = async (req, res) => {
       });
 
       user = filterColumnUser(user);
-
-      return res.status(200).json({
-        status: "success",
-        data: {
-          user: { ...user, imageUrl: data.imageUrl },
-        },
-      });
+      createSendToken({ ...user, imageUrl: data.imageUrl }, 201, req, res);
     }
 
     if (checkUserEmail && loginBy) {
@@ -255,22 +249,11 @@ exports.socialLogin = async (req, res) => {
         });
 
         userUpdated = filterColumnUser(userUpdated);
-
-        return res.status(200).json({
-          status: "success",
-          data: {
-            user: { ...userUpdated, imageUrl: data.imageUrl },
-          },
-        });
+        createSendToken({ ...userUpdated, imageUrl: data.imageUrl }, 200, req, res);
       }
 
       checkUserEmail = filterColumnUser(checkUserEmail);
-      return res.status(200).json({
-        status: "success",
-        data: {
-          user: { ...checkUserEmail, imageUrl: data.imageUrl },
-        },
-      });
+      createSendToken({ ...checkUserEmail, imageUrl: data.imageUrl }, 200, req, res);
     }
   } catch (error) {
     console.log(error);

@@ -20,23 +20,23 @@ module.exports = {
       },
       firstName: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       lastName: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       address: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       phoneNumber: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       gender: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       image: {
         type: Sequelize.STRING,
@@ -52,8 +52,7 @@ module.exports = {
       },
       confirmCode: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
       },
       isConfirmed: {
         type: Sequelize.BOOLEAN,
