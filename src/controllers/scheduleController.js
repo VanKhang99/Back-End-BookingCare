@@ -6,23 +6,26 @@ const handleScheduleFuture = (schedulesArr) => {
   const curDate = new Date();
   curDate.setMinutes(curDate.getMinutes() + 30);
   curDate.setHours(curDate.getHours() + 7);
-  console.log("curDate", curDate);
+  // console.log("curDate", curDate);
   // console.log(curDate.getTime());
 
   const newSchedules = schedulesArr
-    .filter((schedule) => {
+    .reduce((acc, schedule) => {
       const hour = schedule.timeTypeData.valueVi.split(" - ")[0];
+      // console.log(hour);
 
       const dateConvertToCompare = new Date();
       dateConvertToCompare.setHours(+hour.split(":")[0] + 7);
       dateConvertToCompare.setMinutes(hour.split(":")[1]);
       dateConvertToCompare.setSeconds(0);
 
-      console.log("dateConvertToCompare", dateConvertToCompare);
-      console.log(dateConvertToCompare > curDate);
+      // console.log(typeof dateConvertToCompare.getTime());
+      // console.log("dateConvertToCompare", dateConvertToCompare);
+      // console.log(dateConvertToCompare > curDate);
 
-      return +dateConvertToCompare.getTime() > +curDate.getTime();
-    })
+      if (+dateConvertToCompare.getTime() > +curDate.getTime()) acc.push(schedule);
+      return acc;
+    }, [])
     .sort((a, b) => +a.frameTimestamp - +b.frameTimestamp);
 
   return newSchedules;
