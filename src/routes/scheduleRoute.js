@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.route("/").post(scheduleController.bulkCreateSchedule);
 
-router.route("/:keyMap=:id&:timeStamp&:timesFetch").get(scheduleController.handleGetSchedules);
+router.route("/:keyMap=:id&:timeStamp").get(scheduleController.handleGetSchedules);
 
 router.patch("/:typeId/:id/:date", scheduleController.handleDeleteSchedules);
 

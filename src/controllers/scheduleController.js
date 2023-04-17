@@ -1,36 +1,5 @@
 const db = require("../models/index");
 
-const handleScheduleFuture = (schedulesArr) => {
-  if (!schedulesArr.length) return [];
-
-  const curDate = new Date();
-  curDate.setMinutes(curDate.getMinutes() + 30);
-  curDate.setHours(curDate.getHours() + 7);
-  // console.log("curDate", curDate);
-  // console.log(curDate.getTime());
-
-  const newSchedules = schedulesArr
-    .reduce((acc, schedule) => {
-      const hour = schedule.timeTypeData.valueVi.split(" - ")[0];
-      // console.log(hour);
-
-      const dateConvertToCompare = new Date();
-      dateConvertToCompare.setHours(+hour.split(":")[0] + 7);
-      dateConvertToCompare.setMinutes(hour.split(":")[1]);
-      dateConvertToCompare.setSeconds(0);
-
-      // console.log(typeof dateConvertToCompare.getTime());
-      // console.log("dateConvertToCompare", dateConvertToCompare);
-      // console.log(dateConvertToCompare > curDate);
-
-      if (+dateConvertToCompare.getTime() > +curDate.getTime()) acc.push(schedule);
-      return acc;
-    }, [])
-    .sort((a, b) => +a.frameTimestamp - +b.frameTimestamp);
-
-  return newSchedules;
-};
-
 exports.bulkCreateSchedule = async (req, res) => {
   try {
     const { dataSchedule, keyMap } = req.body;
@@ -73,10 +42,9 @@ exports.bulkCreateSchedule = async (req, res) => {
 
 exports.handleGetSchedules = async (req, res) => {
   try {
-    const { keyMap, id, timeStamp, timesFetch } = req.params;
-    console.log(timesFetch);
+    const { keyMap, id, timeStamp } = req.params;
 
-    if (!id || !timeStamp || !keyMap || !timesFetch) {
+    if (!id || !timeStamp || !keyMap) {
       return res.status(400).json({
         status: "error",
         message: "Missing parameter to execute request!",
@@ -100,13 +68,10 @@ exports.handleGetSchedules = async (req, res) => {
       nest: true,
     });
 
-    const schedulesFuture = handleScheduleFuture(schedules);
-
     return res.status(200).json({
       status: "success",
       data: {
-        schedules: timesFetch === "initial-fetch" ? schedulesFuture : schedules,
-        // schedules,
+        schedules: schedules.length > 0 ? schedules : [],
       },
     });
   } catch (error) {
