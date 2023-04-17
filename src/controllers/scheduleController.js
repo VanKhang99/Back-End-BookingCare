@@ -16,7 +16,7 @@ const handleScheduleFuture = (schedulesArr) => {
 
       return dateConvertToCompare > curDate;
     })
-    .sort((a, b) => +a.frameTimestamp - b.frameTimestamp);
+    .sort((a, b) => +a.frameTimestamp - +b.frameTimestamp);
 
   return [...newSchedules];
 };
