@@ -1,7 +1,8 @@
 const db = require("../models/index");
-const { Op } = require("sequelize");
 
 const handleScheduleFuture = (schedulesArr) => {
+  if (!schedulesArr.length) return [];
+
   const curDate = new Date();
   curDate.setMinutes(curDate.getMinutes() + 30);
 
@@ -18,7 +19,8 @@ const handleScheduleFuture = (schedulesArr) => {
     })
     .sort((a, b) => +a.frameTimestamp - +b.frameTimestamp);
 
-  return [...newSchedules];
+  console.log(newSchedules);
+  return newSchedules;
 };
 
 exports.bulkCreateSchedule = async (req, res) => {
@@ -74,12 +76,8 @@ exports.handleGetSchedules = async (req, res) => {
 
     const schedules = await db.Schedule.findAll({
       where: {
-        [Op.and]: [
-          {
-            [`${keyMap}`]: +id,
-            date: timeStamp,
-          },
-        ],
+        [`${keyMap}`]: +id,
+        date: timeStamp,
       },
       attributes: { exclude: ["createdAt", "updatedAt"] },
       include: [
@@ -95,19 +93,10 @@ exports.handleGetSchedules = async (req, res) => {
 
     const schedulesFuture = handleScheduleFuture(schedules);
 
-    if (schedules && schedules.length > 0) {
-      return res.status(200).json({
-        status: "success",
-        data: {
-          schedules: schedulesFuture,
-        },
-      });
-    }
-
     return res.status(200).json({
       status: "success",
       data: {
-        schedules: [],
+        schedules: schedulesFuture.length > 0 ? schedulesFuture : [],
       },
     });
   } catch (error) {
