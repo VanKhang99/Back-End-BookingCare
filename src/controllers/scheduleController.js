@@ -6,7 +6,7 @@ const handleScheduleFuture = (schedulesArr) => {
   const curDate = new Date();
   curDate.setMinutes(curDate.getMinutes() + 30);
   curDate.setHours(curDate.getHours() + 7);
-  // console.log("curDate", curDate);
+  console.log("curDate", curDate);
   // console.log(curDate.getTime());
 
   const newSchedules = schedulesArr
@@ -18,8 +18,8 @@ const handleScheduleFuture = (schedulesArr) => {
       dateConvertToCompare.setMinutes(hour.split(":")[1]);
       dateConvertToCompare.setSeconds(0);
 
-      // console.log("dateConvertToCompare", dateConvertToCompare);
-      // console.log(dateConvertToCompare > curDate);
+      console.log("dateConvertToCompare", dateConvertToCompare);
+      console.log(dateConvertToCompare > curDate);
 
       return +dateConvertToCompare.getTime() > +curDate.getTime();
     })
