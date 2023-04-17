@@ -71,8 +71,6 @@ exports.handleGetSchedules = async (req, res) => {
         message: "Missing parameter to execute request!",
       });
     }
-    // console.log(timeStamp);
-    // console.log(timesFetch);
 
     const schedules = await db.Schedule.findAll({
       where: {
@@ -101,7 +99,7 @@ exports.handleGetSchedules = async (req, res) => {
       return res.status(200).json({
         status: "success",
         data: {
-          schedules: timesFetch === "initial-fetch" ? schedulesFuture : schedules,
+          schedules: schedulesFuture,
         },
       });
     }
