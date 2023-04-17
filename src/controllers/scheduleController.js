@@ -74,6 +74,7 @@ exports.bulkCreateSchedule = async (req, res) => {
 exports.handleGetSchedules = async (req, res) => {
   try {
     const { keyMap, id, timeStamp, timesFetch } = req.params;
+    console.log(timesFetch);
 
     if (!id || !timeStamp || !keyMap || !timesFetch) {
       return res.status(400).json({
@@ -104,7 +105,8 @@ exports.handleGetSchedules = async (req, res) => {
     return res.status(200).json({
       status: "success",
       data: {
-        schedules: schedulesFuture.length > 0 ? schedulesFuture : [],
+        schedules: timesFetch === "initial-fetch" ? schedulesFuture : schedules,
+        // schedules,
       },
     });
   } catch (error) {
