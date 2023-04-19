@@ -471,6 +471,7 @@ exports.confirmExamComplete = async (req, res) => {
         dateBooked,
         timeFrame,
       };
+
       await new Email("confirmExamComplete", language).sendConfirmExamComplete(
         dataEmail,
         "emailResultExamination"

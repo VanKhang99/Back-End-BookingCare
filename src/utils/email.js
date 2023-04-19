@@ -33,19 +33,10 @@ module.exports = class Email {
     });
   }
 
-  async convertHTMLtoPDF(html) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(html);
-    const pdf = await page.pdf({
-      format: "A4",
-      displayHeaderFooter: false,
-      printBackground: true,
-      display: "full",
-    });
-    await browser.close();
-    return pdf;
-  }
+  // async convertHTMLtoPDF(html) {
+
+  //   return pdf;
+  // }
 
   async send(template, dataEmail, subject, pdf = undefined) {
     // 1.Path file Email
@@ -105,7 +96,18 @@ module.exports = class Email {
       dateBooked: dataEmail?.dateBooked,
     });
 
-    const pdf = await this.convertHTMLtoPDF(resultExaminationHTML);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(resultExaminationHTML);
+    const pdf = await page.pdf({
+      format: "A4",
+      displayHeaderFooter: false,
+      printBackground: true,
+      display: "full",
+    });
+    await browser.close();
+
+    // const pdf = await this.convertHTMLtoPDF(resultExaminationHTML);
     await this.send("emailConfirmExamComplete", dataEmail, subject, pdf);
   }
 
