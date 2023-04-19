@@ -10,7 +10,7 @@ router.post("/", bookingController.createBooking);
 
 router.get("/all-patients/:doctorId/:dateBooked", bookingController.getAllPatientsBookingDoctor);
 
-router.patch("/verify-booking/:token&:id&:confirmPackage?", bookingController.verifyBooking);
+router.patch("/confirm-booking/:token&:id&:confirmPackage?", bookingController.confirmBooking);
 router.patch("/confirm-exam-complete/:token&:patientId", bookingController.confirmExamComplete);
 router.get("/history-booked/:patientId", bookingController.getAllHistoryBookedById);
 

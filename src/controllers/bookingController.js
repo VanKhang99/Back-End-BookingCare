@@ -1,15 +1,13 @@
 const db = require("../models/index");
-const { Op } = require("sequelize");
-// const sendEmail = require("../utils/email");
 const Email = require("../utils/email");
 const { v4: uuidv4 } = require("uuid");
 
 const buildURLConfirmBooking = (doctorId, token, packageId) => {
   let URLConfirm;
   if (doctorId) {
-    URLConfirm = `${process.env.URL_REACT}/verify-booking/token=${token}&doctorId=${doctorId}`;
+    URLConfirm = `${process.env.URL_REACT}/confirm-booking/token=${token}&doctorId=${doctorId}`;
   } else {
-    URLConfirm = `${process.env.URL_REACT}/verify-booking/token=${token}&packageId=${packageId}`;
+    URLConfirm = `${process.env.URL_REACT}/confirm-booking/token=${token}&packageId=${packageId}`;
   }
 
   return URLConfirm;
@@ -232,7 +230,7 @@ exports.createBooking = async (req, res) => {
   }
 };
 
-exports.verifyBooking = async (req, res) => {
+exports.confirmBooking = async (req, res) => {
   try {
     const { token, id, confirmPackage } = req.params;
 
