@@ -327,18 +327,11 @@ exports.getAllPatientsBookingDoctor = async (req, res) => {
       raw: true,
     });
 
-    if (!patients.length) {
-      return res.status(404).json({
-        status: "error",
-        message: "Invalid data input. Please check again!",
-      });
-    }
-
     return res.status(200).json({
       status: "success",
       results: patients.length,
       data: {
-        data: patients,
+        data: patients.length ? patients : [],
       },
     });
   } catch (error) {
