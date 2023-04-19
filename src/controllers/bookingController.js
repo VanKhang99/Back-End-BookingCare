@@ -1,6 +1,7 @@
 const db = require("../models/index");
 const { Op } = require("sequelize");
-const sendEmail = require("../utils/email");
+// const sendEmail = require("../utils/email");
+const Email = require("../utils/email");
 const { v4: uuidv4 } = require("uuid");
 
 const buildURLConfirmBooking = (doctorId, token, packageId) => {
@@ -201,9 +202,10 @@ exports.createBooking = async (req, res) => {
 
     if (booking.dataValues.statusId === "S1") {
       const personNameBook = language === "vi" ? `${lastName} ${firstName}` : `${firstName} ${lastName}`;
-      await sendEmail({
+
+      //Send email
+      const dataEmail = {
         email,
-        language,
         [`${doctorName ? "doctorName" : "packageName"}`]: doctorName ? doctorName : packageName,
         clinicName,
         dateBooked,
@@ -211,7 +213,8 @@ exports.createBooking = async (req, res) => {
         personNameBook,
         URLConfirm: buildURLConfirmBooking(doctorId, token, packageId),
         remote,
-      });
+      };
+      await new Email("createBooking", language).sendCreateBooking(dataEmail);
 
       return res.status(200).json({
         status: "success",
@@ -458,21 +461,21 @@ exports.confirmExamComplete = async (req, res) => {
     );
 
     if (updateBookingInDb[0]) {
-      await sendEmail(
-        {
-          email,
-          language,
-          patientName,
-          doctorName,
-          examinationResults,
-          invoiceNumber,
-          serviceUsed,
-          totalFee,
-          dateBooked,
-          timeFrame,
-          // remote,
-        },
-        "confirmExamComplete"
+      //Send email
+      const dataEmail = {
+        email,
+        patientName,
+        doctorName,
+        examinationResults,
+        invoiceNumber,
+        serviceUsed,
+        totalFee,
+        dateBooked,
+        timeFrame,
+      };
+      await new Email("confirmExamComplete", language).sendConfirmExamComplete(
+        dataEmail,
+        "emailResultExamination"
       );
 
       return res.status(200).json({

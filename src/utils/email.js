@@ -2,9 +2,38 @@ const puppeteer = require("puppeteer");
 const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 
-const convertHTMLtoPDF = async (html, pdf) => {
-  try {
+const OAuth2_client = new OAuth2(
+  process.env.GOOGLE_OAUTH2_CLIENT_ID,
+  process.env.GOOGLE_OAUTH2_CLIENT_SECRET
+);
+OAuth2_client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN });
+
+module.exports = class Email {
+  constructor(typeEmail, language) {
+    this.typeEmail = typeEmail;
+    this.language = language;
+  }
+
+  newTransport() {
+    const accessToken = OAuth2_client.getAccessToken();
+
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.EMAIL_USER,
+        clientId: process.env.GOOGLE_OAUTH2_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_OAUTH2_CLIENT_SECRET,
+        refreshToken: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN,
+        accessToken: accessToken,
+      },
+    });
+  }
+
+  async convertHTMLtoPDF(html, pdf) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setContent(html);
@@ -16,161 +45,104 @@ const convertHTMLtoPDF = async (html, pdf) => {
     });
     await browser.close();
     return pdf;
-  } catch (error) {
-    console.log(error);
   }
-};
 
-const sendEmail = async (data, typeEmail = "createBooking") => {
-  try {
-    // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
-      // host: process.env.EMAIL_HOST,
-      // port: process.env.EMAIL_PORT,
-      service: "gmail",
-      // secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+  async send(template, dataEmail, subject, pdf = undefined) {
+    // 1.Path file Email
+    const pathEmailFile =
+      this.language === "vi"
+        ? `${__dirname}/../views/emails/${template}Vi.ejs`
+        : `${__dirname}/../views/emails/${template}En.ejs`;
 
-    let pathEmailFile, markupHTML, subject, pathFileResultExam, resultExaminationHTML, pdf;
-
-    if (typeEmail === "createBooking") {
-      pathEmailFile =
-        data.language === "vi"
-          ? `${__dirname}/../views/emails/emailVi.ejs`
-          : `${__dirname}/../views/emails/emailEn.ejs`;
-
-      markupHTML = await ejs.renderFile(pathEmailFile, {
-        dateBooked: data?.dateBooked,
-        doctorName: data?.doctorName,
-        packageName: data?.packageName,
-        clinicName: data?.clinicName,
-        timeFrame: data?.timeFrame,
-        personNameBook: data?.personNameBook,
-        URLConfirm: data?.URLConfirm,
-        remote: data?.remote,
-      });
-
-      subject =
-        data.language === "vi"
-          ? "Thư xác nhận đặt lịch khám bệnh"
-          : "Medical Examination Booking Confirmation";
-    } else if (typeEmail === "confirmExamComplete") {
-      pathEmailFile =
-        data.language === "vi"
-          ? `${__dirname}/../views/emails/emailConfirmExamCompleteVi.ejs`
-          : `${__dirname}/../views/emails/emailConfirmExamCompleteEn.ejs`;
-
-      markupHTML = await ejs.renderFile(pathEmailFile, {
-        patientName: data?.patientName,
-        dateBooked: data?.dateBooked,
-        timeFrame: data?.timeFrame,
-      });
-
-      subject =
-        data.language === "vi"
-          ? "Kết quả và hóa đơn sau khi khám bệnh"
-          : "Confirm results and invoices after successful medical examination";
-
-      pathFileResultExam =
-        data.language === "vi"
-          ? `${__dirname}/../views/resultExamination/resultExaminationVi.ejs`
-          : `${__dirname}/../views/resultExamination/resultExaminationEn.ejs`;
-
-      resultExaminationHTML = await ejs.renderFile(pathFileResultExam, {
-        patientName: data?.patientName,
-        doctorName: data?.doctorName,
-        examinationResults: data?.examinationResults,
-        invoiceNumber: data?.invoiceNumber,
-        serviceUsed: data?.serviceUsed,
-        totalFee: data?.totalFee,
-        dateBooked: data?.dateBooked,
-      });
-
-      pdf = await convertHTMLtoPDF(resultExaminationHTML, pdf);
-    } else if (typeEmail === "confirmAccount") {
-      pathEmailFile =
-        data.language === "vi"
-          ? `${__dirname}/../views/emails/emailConfirmAccountVi.ejs`
-          : `${__dirname}/../views/emails/emailConfirmAccountEn.ejs`;
-
-      markupHTML = await ejs.renderFile(pathEmailFile, {
-        confirmCode: data?.confirmCode,
-      });
-
-      subject =
-        data.language === "vi" ? "Xác minh tài khoản BookingCare" : "BookingCare account verification";
-    } else if (typeEmail === "forgotPassword") {
-      pathEmailFile =
-        data.language === "vi"
-          ? `${__dirname}/../views/emails/emailForgotPasswordVi.ejs`
-          : `${__dirname}/../views/emails/emailForgotPasswordEn.ejs`;
-
-      markupHTML = await ejs.renderFile(pathEmailFile, {
-        confirmCode: data?.confirmCode,
-      });
-
-      subject =
-        data.language === "vi"
-          ? "Yêu cầu khôi phục mật khẩu BookingCare"
-          : "Request to reset BookingCare password";
-    } else if (typeEmail === "passwordChanged") {
-      pathEmailFile =
-        data.language === "vi"
-          ? `${__dirname}/../views/emails/emailChangePasswordSuccessVi.ejs`
-          : `${__dirname}/../views/emails/emailChangePasswordSuccessEn.ejs`;
-
-      const currentDate = new Date();
-      const formatDate = currentDate.getDate() < 10 ? `0${currentDate.getDate()}` : currentDate.getDate();
-      const formatMonth =
-        currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
-      const formatHour = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-
-      const timePasswordChanged = `${formatDate} - ${formatMonth} - ${currentDate.getFullYear()} ${
-        data.language === "vi" ? "lúc" : "at"
-      } ${formatHour} (UTC/GMT +7 hours)`;
-
-      markupHTML = await ejs.renderFile(pathEmailFile, {
-        timePasswordChanged,
-      });
-
-      subject =
-        data.language === "vi"
-          ? "Mật khẩu BookingCare đã được thay đổi"
-          : "BookingCare password has been changed";
-    }
+    // 2. Render HTML based on a public template
+    const markupHTML = await ejs.renderFile(pathEmailFile, dataEmail);
 
     const mailOptions = {
-      from: `BookingCare <noreply@email.bookingcare.com>`, // sender address
-      to: `${data.email}`, // list of receivers
-      subject: subject, // Subject line
+      from: `BookingCare <${process.env.EMAIL_USER}>`,
+      to: dataEmail.email,
+      subject: subject,
       text: htmlToText.convert(markupHTML), // plain text body
       html: markupHTML, // html body
-      ...(typeEmail === "confirmExamComplete" && {
+      ...(this.typeEmail === "confirmExamComplete" && {
         attachments: [
           {
             // utf-8 string as an attachment
-            filename: `${data.language === "vi" ? "Kết quả khám bệnh" : "Examination Result"}.pdf`,
+            filename: `${this.language === "vi" ? "Kết quả khám bệnh" : "Examination Result"}.pdf`,
             content: pdf,
           },
         ],
       }),
     };
 
-    // send mail with defined transport object
-    let info = await transporter.sendMail(mailOptions, function (err, info) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(info);
-      }
+    // 3. Create a transport and send email
+    await this.newTransport().sendMail(mailOptions);
+  }
+
+  async sendCreateBooking(dataEmail) {
+    const subject =
+      this.language === "vi" ? "Thư xác nhận đặt lịch khám bệnh" : "Medical Examination Booking Confirmation";
+    await this.send("emailCreateBooking", dataEmail, subject);
+  }
+
+  async sendConfirmExamComplete(dataEmail, templatePdf) {
+    const subject =
+      this.language === "vi"
+        ? "Kết quả và hóa đơn sau khi khám bệnh"
+        : "Confirm results and invoices after successful medical examination";
+
+    const pathFileResultExam =
+      this.language === "vi"
+        ? `${__dirname}/../views/emails/${templatePdf}Vi.ejs`
+        : `${__dirname}/../views/emails/${templatePdf}En.ejs`;
+
+    const resultExaminationHTML = await ejs.renderFile(pathFileResultExam, {
+      patientName: dataEmail?.patientName,
+      doctorName: dataEmail?.doctorName,
+      examinationResults: dataEmail?.examinationResults,
+      invoiceNumber: dataEmail?.invoiceNumber,
+      serviceUsed: dataEmail?.serviceUsed,
+      totalFee: dataEmail?.totalFee,
+      dateBooked: dataEmail?.dateBooked,
     });
-  } catch (error) {
-    console.log(error);
+
+    const pdf = await this.convertHTMLtoPDF(resultExaminationHTML, pdf);
+    await this.send("emailConfirmExamComplete", dataEmail, subject, pdf);
+  }
+
+  async sendConfirmAccount(dataEmail) {
+    const subject =
+      this.language === "vi" ? "Xác minh tài khoản BookingCare" : "BookingCare account verification";
+
+    await this.send("emailConfirmAccount", dataEmail, subject);
+  }
+
+  async sendForgotPassword(dataEmail) {
+    const subject =
+      this.language === "vi"
+        ? "Yêu cầu khôi phục mật khẩu BookingCare"
+        : "Request to reset BookingCare password";
+
+    await this.send("emailForgotPassword", dataEmail, subject);
+  }
+
+  async sendPasswordChanged(dataEmail) {
+    const subject =
+      this.language === "vi"
+        ? "Mật khẩu BookingCare đã được thay đổi"
+        : "BookingCare password has been changed";
+
+    const currentDate = new Date();
+    const formatDate = currentDate.getDate() < 10 ? `0${currentDate.getDate()}` : currentDate.getDate();
+    const formatMonth =
+      currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
+    const formatHour = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+    const timePasswordChanged = `${formatDate} - ${formatMonth} - ${currentDate.getFullYear()} ${
+      this.language === "vi" ? "lúc" : "at"
+    } ${formatHour} (UTC/GMT +7 hours)`;
+
+    dataEmail = { ...dataEmail, timePasswordChanged };
+
+    await this.send("emailChangePasswordSuccess", dataEmail, subject);
   }
 };
-
-module.exports = sendEmail;

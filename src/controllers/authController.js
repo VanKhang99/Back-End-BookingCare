@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const userService = require("../services/userService");
-const sendEmail = require("../utils/email");
+const Email = require("../utils/email");
 const { getOneImageFromS3 } = require("./awsS3controller");
 const { filterColumnUser } = require("../utils/helpers");
 
@@ -65,14 +65,12 @@ exports.sendCode = async (req, res) => {
       });
     }
 
-    await sendEmail(
-      {
-        email,
-        language,
-        confirmCode,
-      },
-      "confirmAccount"
-    );
+    const dataEmail = {
+      email,
+      confirmCode,
+    };
+
+    await new Email("confirmAccount", language).sendConfirmAccount(dataEmail);
 
     return res.status(200).json({
       status: "success",
@@ -366,14 +364,12 @@ exports.forgotPassword = async (req, res) => {
     );
 
     // 3) Send email
-    await sendEmail(
-      {
-        email,
-        language,
-        confirmCode,
-      },
-      "forgotPassword"
-    );
+    const dataEmail = {
+      email,
+      confirmCode,
+    };
+
+    await new Email("forgotPassword", language).sendForgotPassword(dataEmail);
 
     res.status(200).json({
       status: "success",
@@ -411,13 +407,11 @@ exports.resetPassword = async (req, res) => {
     user = filterColumnUser(user);
 
     // Send email
-    await sendEmail(
-      {
-        email,
-        language,
-      },
-      "passwordChanged"
-    );
+    const dataEmail = {
+      email,
+    };
+
+    await new Email("passwordChanged", language).sendPasswordChanged(dataEmail);
 
     // Send token for client
     createSendToken(user, 200, req, res);
