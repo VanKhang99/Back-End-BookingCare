@@ -33,11 +33,11 @@ module.exports = class Email {
     });
   }
 
-  async convertHTMLtoPDF(html, pdf) {
+  async convertHTMLtoPDF(html) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setContent(html);
-    pdf = await page.pdf({
+    const pdf = await page.pdf({
       format: "A4",
       displayHeaderFooter: false,
       printBackground: true,
@@ -105,7 +105,7 @@ module.exports = class Email {
       dateBooked: dataEmail?.dateBooked,
     });
 
-    const pdf = await this.convertHTMLtoPDF(resultExaminationHTML, pdf);
+    const pdf = await this.convertHTMLtoPDF(resultExaminationHTML);
     await this.send("emailConfirmExamComplete", dataEmail, subject, pdf);
   }
 
