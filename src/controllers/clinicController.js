@@ -4,7 +4,6 @@ const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./
 
 exports.getAllClinics = async (req, res) => {
   try {
-    const { type } = req.params;
     const clinics = await db.Clinic.findAll({
       attributes: {
         exclude: ["createdAt", "updatedAt"],
@@ -19,10 +18,6 @@ exports.getAllClinics = async (req, res) => {
     }
 
     let clinicsData = await getManyImageFromS3("Clinic", clinics);
-
-    if (type === "popular") {
-      clinicsData = clinicsData.filter((clinic) => clinic.popular);
-    }
 
     return res.status(200).json({
       status: "success",

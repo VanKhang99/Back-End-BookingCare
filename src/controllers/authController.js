@@ -404,6 +404,7 @@ exports.resetPassword = async (req, res) => {
       where: { email, confirmCode },
     });
 
+    user = await getOneImageFromS3("User", user);
     user = filterColumnUser(user);
 
     // Send email

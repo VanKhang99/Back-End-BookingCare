@@ -22,10 +22,15 @@ exports.getAllSpecialties = async (req, res) => {
       specialtiesData = specialtiesData.filter((specialty) => specialty.remote);
     }
 
+    if (type === "all") {
+      specialtiesData = specialties;
+    }
+
     if (specialties?.length > 0) {
       return res.status(200).json({
         status: "success",
         results: specialtiesData.length,
+        type,
         data: {
           specialties: specialtiesData,
         },

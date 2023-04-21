@@ -488,3 +488,25 @@ exports.confirmExamComplete = async (req, res) => {
     });
   }
 };
+
+exports.deleteBooking = async (req, res) => {
+  try {
+    const bookingId = +req.params.id;
+
+    await db.Booking.destroy({
+      where: { id: bookingId },
+    });
+
+    return res.status(204).json({
+      status: "success",
+      message: "Booking deleted successfully!",
+    });
+    // res.send("ok");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Delete booking error from the server.",
+    });
+  }
+};

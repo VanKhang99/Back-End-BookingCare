@@ -5,10 +5,9 @@ const router = express.Router();
 
 // router.get("/clinicId/:valueClinicId", packageController.getAllPackagesByClinicId);
 
+router.get("/", packageController.getAllPackages);
 router.post("/", packageController.createPackage);
 router.get("/:packageId", packageController.getPackage);
 router.delete("/:packageId", packageController.deletePackage);
-
-router.get("/:specialtyId/:clinicId/:getAll", packageController.getAllPackages);
 
 module.exports = router;

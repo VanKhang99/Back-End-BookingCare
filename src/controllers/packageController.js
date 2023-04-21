@@ -4,22 +4,20 @@ const { bulkCreatePackageCategories } = require("./packageCategoriesController")
 
 exports.getAllPackages = async (req, res) => {
   try {
-    const clinicId = +req.params.clinicId;
-    const specialtyId = +req.params.specialtyId;
-    const getAll = req.params.getAll;
-    let objectWhere;
+    // const clinicId = +req.params.clinicId;
+    // const specialtyId = +req.params.specialtyId;
+    // const getAll = req.params.getAll;
 
-    if (getAll === "true") {
-      objectWhere = {};
-    } else {
-      objectWhere = {
-        specialtyId: specialtyId ? specialtyId : null,
-        ...(clinicId && { clinicId: clinicId }),
-      };
-    }
+    // if (getAll === "true") {
+    //   objectWhere = {};
+    // } else {
+    //   objectWhere = {
+    //     specialtyId: specialtyId ? specialtyId : null,
+    //     ...(clinicId && { clinicId: clinicId }),
+    //   };
+    // }
 
     const packages = await db.Package.findAll({
-      where: objectWhere,
       attributes: {
         exclude: ["createdAt", "updatedAt", "provinceId", "paymentId"],
       },
@@ -29,11 +27,6 @@ exports.getAllPackages = async (req, res) => {
           as: "clinicData",
           attributes: ["address", "nameEn", "nameVi"],
         },
-        // {
-        //   model: db.Category,
-        //   as: "category",
-        //   attributes: ["id", "nameEn", "nameVi"],
-        // },
         {
           model: db.Specialty,
           as: "specialty",
@@ -107,11 +100,6 @@ exports.getPackage = async (req, res) => {
           as: "paymentPackage",
           attributes: ["keyMap", "valueEn", "valueVi"],
         },
-        // {
-        //   model: db.Category,
-        //   through: { attributes: [] },
-        //   // as: "packageCategoryData",
-        // },
       ],
       nest: true,
       raw: true,

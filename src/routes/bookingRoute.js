@@ -14,4 +14,6 @@ router.patch("/confirm-booking/:token&:id&:confirmPackage?", bookingController.c
 router.patch("/confirm-exam-complete/:token&:patientId", bookingController.confirmExamComplete);
 router.get("/history-booked/:patientId", bookingController.getAllHistoryBookedById);
 
+router.delete("/:id", bookingController.deleteBooking);
+
 module.exports = router;
