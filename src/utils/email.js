@@ -96,7 +96,7 @@ module.exports = class Email {
       dateBooked: dataEmail?.dateBooked,
     });
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setContent(resultExaminationHTML);
     const pdf = await page.pdf({

@@ -1,7 +1,5 @@
 const db = require("../models/index");
-const { Buffer } = require("buffer");
-const { checkInfo } = require("../utils/helpers");
-const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
+const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
 exports.getAllSpecialties = async (req, res) => {
   try {
