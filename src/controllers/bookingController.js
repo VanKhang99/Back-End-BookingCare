@@ -304,7 +304,18 @@ exports.getAllPatientsBookingDoctor = async (req, res) => {
           as: "doctorName",
           attributes: ["firstName", "lastName"],
         },
-
+        {
+          model: db.Doctor,
+          as: "doctorData",
+          attributes: ["clinicId"],
+          include: [
+            {
+              model: db.Clinic,
+              as: "clinic",
+              attributes: ["nameVi", "nameEn"],
+            },
+          ],
+        },
         {
           model: db.Allcode,
           as: "bookingPrice",
@@ -423,24 +434,11 @@ exports.confirmExamComplete = async (req, res) => {
       });
     }
 
-    const {
-      email,
-      language,
-      patientName,
-      doctorName,
-      examinationResults,
-      invoiceNumber,
-      serviceUsed,
-      totalFee,
-      dateBooked,
-      timeFrame,
-      remote,
-    } = req.body;
+    const { email, language, patientName, doctorName, clinicName, dateBooked, timeFrame } = req.body;
 
     const updateBookingInDb = await db.Booking.update(
       {
         statusId: "S3",
-        invoiceNumber,
         updatedAt: new Date(),
       },
       {
@@ -457,18 +455,12 @@ exports.confirmExamComplete = async (req, res) => {
         email,
         patientName,
         doctorName,
-        examinationResults,
-        invoiceNumber,
-        serviceUsed,
-        totalFee,
+        clinicName,
         dateBooked,
         timeFrame,
       };
 
-      await new Email("confirmExamComplete", language).sendConfirmExamComplete(
-        dataEmail,
-        "emailResultExamination"
-      );
+      await new Email("confirmExamComplete", language).sendConfirmExamComplete(dataEmail);
 
       return res.status(200).json({
         status: "success",

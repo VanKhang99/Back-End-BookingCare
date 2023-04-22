@@ -1,4 +1,3 @@
-const puppeteer = require("puppeteer");
 const ejs = require("ejs");
 const nodemailer = require("nodemailer");
 const htmlToText = require("html-to-text");
@@ -33,12 +32,7 @@ module.exports = class Email {
     });
   }
 
-  // async convertHTMLtoPDF(html) {
-
-  //   return pdf;
-  // }
-
-  async send(template, dataEmail, subject, pdf = undefined) {
+  async send(template, dataEmail, subject) {
     // 1.Path file Email
     const pathEmailFile =
       this.language === "vi"
@@ -54,15 +48,6 @@ module.exports = class Email {
       subject: subject,
       text: htmlToText.convert(markupHTML), // plain text body
       html: markupHTML, // html body
-      ...(this.typeEmail === "confirmExamComplete" && {
-        attachments: [
-          {
-            // utf-8 string as an attachment
-            filename: `${this.language === "vi" ? "Kết quả khám bệnh" : "Examination Result"}.pdf`,
-            content: pdf,
-          },
-        ],
-      }),
     };
 
     // 3. Create a transport and send email
@@ -75,40 +60,14 @@ module.exports = class Email {
     await this.send("emailCreateBooking", dataEmail, subject);
   }
 
-  async sendConfirmExamComplete(dataEmail, templatePdf) {
+  async sendConfirmExamComplete(dataEmail) {
     const subject =
       this.language === "vi"
-        ? "Kết quả và hóa đơn sau khi khám bệnh"
-        : "Confirm results and invoices after successful medical examination";
-
-    const pathFileResultExam =
-      this.language === "vi"
-        ? `${__dirname}/../views/emails/${templatePdf}Vi.ejs`
-        : `${__dirname}/../views/emails/${templatePdf}En.ejs`;
-
-    const resultExaminationHTML = await ejs.renderFile(pathFileResultExam, {
-      patientName: dataEmail?.patientName,
-      doctorName: dataEmail?.doctorName,
-      examinationResults: dataEmail?.examinationResults,
-      invoiceNumber: dataEmail?.invoiceNumber,
-      serviceUsed: dataEmail?.serviceUsed,
-      totalFee: dataEmail?.totalFee,
-      dateBooked: dataEmail?.dateBooked,
-    });
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(resultExaminationHTML);
-    const pdf = await page.pdf({
-      format: "A4",
-      displayHeaderFooter: false,
-      printBackground: true,
-      display: "full",
-    });
-    await browser.close();
+        ? "Xác nhận hoàn thành khám bệnh tại bệnh viện (phòng khám)"
+        : "Confirmation of completion of medical examination at the hospital (clinic)";
 
     // const pdf = await this.convertHTMLtoPDF(resultExaminationHTML);
-    await this.send("emailConfirmExamComplete", dataEmail, subject, pdf);
+    await this.send("emailConfirmExamComplete", dataEmail, subject);
   }
 
   async sendConfirmAccount(dataEmail) {
