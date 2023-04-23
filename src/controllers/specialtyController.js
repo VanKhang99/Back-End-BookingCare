@@ -1,7 +1,6 @@
 const db = require("../models/index");
-const { Buffer } = require("buffer");
-const { checkInfo } = require("../utils/helpers");
-const { getManyImageFromS3, getOneImageFromS3, deleteImageFromS3 } = require("./awsS3controller");
+const { Op } = require("sequelize");
+const { getManyImageFromS3, getOneImageFromS3 } = require("./awsS3controller");
 
 exports.getAllSpecialties = async (req, res) => {
   try {
@@ -41,6 +40,33 @@ exports.getAllSpecialties = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Get all info specialty error from the server.",
+    });
+  }
+};
+
+exports.getAllSpecialtiesMentalHealth = async (req, res) => {
+  try {
+    const specialties = await db.Specialty.findAll({
+      where: {
+        nameVi: ["Tư vấn, trị liệu Tâm lý", "Sức khỏe tâm thần"],
+      },
+      raw: true,
+    });
+
+    const specialtiesData = await getManyImageFromS3("Specialty", specialties);
+
+    return res.status(200).json({
+      status: "success",
+      result: specialtiesData.length,
+      data: {
+        specialties: specialtiesData.length ? specialtiesData : [],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Get all specialties mental health error from the server.",
     });
   }
 };
